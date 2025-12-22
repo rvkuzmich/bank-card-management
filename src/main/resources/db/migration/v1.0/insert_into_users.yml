@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_into_users
+      author: Roman Kuzmich
+      comment: Заполнение таблицы пользователей
+      preConditions:
+        - tableExists:
+            tableName: users
+
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440000"
+              - column:
+                  name: username
+                  value: "admin"
+              - column:
+                  name: email
+                  value: "admin@bankcard.com"
+              - column:
+                  name: password
+                  value: "$2a$12$ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz"
+              - column:
+                  name: first_name
+                  value: "Roman"
+              - column:
+                  name: last_name
+                  value: "Kuzmich"
+              - column:
+                  name: role
+                  value: "ADMIN"
+              - column:
+                  name: enabled
+                  valueBoolean: true
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "550e8400-e29b-41d4-a716-446655440001"
+              - column:
+                  name: username
+                  value: "ngrish"
+              - column:
+                  name: email
+                  value: "ngrish@mail.ru"
+              - column:
+                  name: password
+                  value: "$2a$12$ZYXWVUTSRQPONMLKJIHGFEDCBA9876543210zyxwvutsrqponmlkjihg"
+              - column:
+                  name: first_name
+                  value: "Nadezhda"
+              - column:
+                  name: last_name
+                  value: "Grishina"
+              - column:
+                  name: role
+                  value: "USER"
+              - column:
+                  name: enabled
+                  valueBoolean: true

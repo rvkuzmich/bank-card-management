@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - include:
+      file: db/migration/v1.0/create_table_users.yml
+  - include:
+      file: db/migration/v1.0/create_table_cards.yml
+  - include:
+      file: db/migration/v1.0/create_table_transfer.yml
+  - include:
+      file: db/migration/v1.0/create_constraints.yml
+  - include:
+      file: db/migration/v1.0/create_index.yml
+  - include:
+      file: db/migration/v1.0/create_triggers.yml
+
+  - include:
+      file: db/migration/v1.0/insert_into_users.yml

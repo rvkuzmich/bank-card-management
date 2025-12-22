@@ -1,0 +1,107 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_table_card
+      author: Roman Kuzmich
+      comment: Создание таблицы банковских карт
+      preConditions:
+        - not:
+            - tableExists:
+                tableName: card
+        - tableExists:
+            tableName: users
+      changes:
+        - createTable:
+            tableName: card
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  remarks: ID карты
+
+              - column:
+                  name: card_number
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                  remarks: Номер карты
+
+              - column:
+                  name: masked_number
+                  type: VARCHAR(19)
+                  constraints:
+                    nullable: false
+                  remarks: Маскированный номер карты
+
+              - column:
+                  name: cardholder
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                  remarks: Держатель карты
+
+              - column:
+                  name: expiry_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+                  remarks: Срок действия карты
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+                  remarks: Статус карты
+
+              - column:
+                  name: balance
+                  type: DECIMAL(15,2)
+                  defaultValue: 0.00
+                  constraints:
+                    nullable: false
+                  remarks: баланс карты
+
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_card_user
+                    referencedTableName: users
+                    referencedColumnNames: id
+                  remarks: ID пользователя
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+                  remarks: Временная метка создания записи о карте
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+                  remarks: Временная метка последнего обновления записи о карте
+
+        - createIndex:
+            tableName: card
+            indexName: idx_card_user
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            tableName: card
+            indexName: idx_card_status
+            columns:
+              - column:
+                  name: status

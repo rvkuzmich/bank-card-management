@@ -1,9 +1,95 @@
-# 
-# docker-compose.yml — определяет сервисы для разработки и тестирования.
+version: '3.8'
 
-Что нужно сделать:
-  - Настроить сервисы для:
-      - PostgreSQL (или MySQL) с начальной базой.
-      - Приложения Spring Boot (если нужно).
-  - Открыть нужные порты (например, 5432, 8080).
-  - Настроить volume для хранения данных БД.
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: bank-rest-postgres
+    environment:
+      POSTGRES_DB: carddb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin123}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d bankcarddb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bank-rest-network
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bank-rest-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bankcarddb
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:}
+
+      JWT_SECRET: ${JWT_SECRET:}
+      JWT_EXPIRATION: 86400000
+
+      ENCRYPTION_SECRET_KEY: ${ENCRYPTION_SECRET_KEY:}
+      ENCRYPTION_SALT: ${ENCRYPTION_SALT:}
+
+      SPRING_PROFILES_ACTIVE: docker
+      SERVER_PORT: 8080
+      SERVER_SERVLET_CONTEXT_PATH: /api
+
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,metrics
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
+
+      LOGGING_LEVEL_COM_BANKCARD: INFO
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: WARN
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config:ro
+    networks:
+      - bank-rest-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: bank-rest-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@bankcard.com
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - bank-rest-network
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+networks:
+  bank-rest-network:
+    driver: bridge
+    name: bank-rest-network
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local

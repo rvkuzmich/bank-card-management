@@ -1,0 +1,85 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_table_transfer
+      author: Roman Kuzmich
+      comment: Создание таблицы банковских переводов
+      preConditions:
+        - not:
+            - tableExists:
+                tableName: transfer
+        - tableExists:
+            tableName: card
+
+      changes:
+        - createTable:
+            tableName: transfer
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  remarks: ID перевода
+
+              - column:
+                  name: from_card_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_transfer_from_card
+                    referencedTableName: card
+                    referencedColumnNames: id
+                  remarks: ID карты, с которой осуществляется перевод
+
+              - column:
+                  name: to_card_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_transfer_to_card
+                    referencedTableName: card
+                    referencedColumnNames: id
+                  remarks: ID карты, на которую осуществляется перевод
+
+              - column:
+                  name: amount
+                  type: DECIMAL(15,2)
+                  constraints:
+                    nullable: false
+                  remarks: Сумма перевода
+
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+                  remarks: Описание перевода
+
+              - column:
+                  name: timestamp
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+                  remarks: Временная метка перевода
+
+        - createIndex:
+            tableName: transfer
+            indexName: idx_transfer_from_card
+            columns:
+              - column:
+                  name: from_card_id
+
+        - createIndex:
+            tableName: transfer
+            indexName: idx_transfer_to_card
+            columns:
+              - column:
+                  name: to_card_id
+
+        - createIndex:
+            tableName: transfer
+            indexName: idx_transfer_timestamp
+            columns:
+              - column:
+                  name: timestamp

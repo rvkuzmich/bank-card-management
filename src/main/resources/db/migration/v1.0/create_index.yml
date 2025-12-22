@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_index
+      author: Roman Kuzmich
+      preConditions:
+        - and:
+            - tableExists:
+                tableName: users
+            - tableExists:
+                tableName: card
+            - tableExists:
+                tableName: transfer
+            - and:
+                - not:
+                    indexExists:
+                      indexName: idx_user_email
+                - not:
+                    indexExists:
+                      indexName: idx_card_expiry
+                - not:
+                    indexExists:
+                      indexName: idx_transfer_amount
+
+      changes:
+        - createIndex:
+            tableName: users
+            indexName: idx_user_email
+            columns:
+              - column:
+                  name: email
+
+        - createIndex:
+            tableName: card
+            indexName: idx_card_expiry
+            columns:
+              - column:
+                  name: expiry_date
+
+        - createIndex:
+            tableName: transfer
+            indexName: idx_transfer_amount
+            columns:
+              - column:
+                  name: amount

@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_triggers
+      author: Roman Kuzmich
+
+      changes:
+        - sql:
+            sql: |
+              CREATE OR REPLACE FUNCTION update_updated_at_column()
+              RETURNS TRIGGER AS $$
+              BEGIN
+                NEW.updated_at = CURRENT_TIMESTAMP;
+                RETURN NEW;
+              END;
+              $$ language 'plpgsql';
+        - sql:
+            sql: |
+              CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+              FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+        - sql:
+            sql: |
+              CREATE TRIGGER update_card_updated_at BEFORE UPDATE ON card
+              FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

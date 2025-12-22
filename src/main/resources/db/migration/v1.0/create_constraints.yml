@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_constraints
+      author: Roman Kuzmich
+      preConditions:
+        - and:
+            - tableExists:
+                tableName: users
+            - tableExists:
+                tableName: card
+            - tableExists:
+                tableName: transfer
+            - and:
+                - not:
+                    constraintExists:
+                      constraintName: uk_user_cardholder
+                - not:
+                    constraintExists:
+                      constraintName: ck_balance_non_negative
+                - not:
+                    constraintExists:
+                      constraintName: ck_status_valid
+                - not:
+                    constraintExists:
+                      constraintName: ck_amount_positive
+                - not:
+                    constraintExists:
+                      constraintName: ck_role_valid
+
+      changes:
+        - addUniqueConstraint:
+            tableName: card
+            columnNames: user_id, cardholder
+            constraintName: uk_user_cardholder
+
+        - addCheckConstraint:
+            tableName: card
+            constraintName: ck_balance_non_negative
+            constraintBody: balance >= 0
+
+        - addCheckConstraint:
+            tableName: card
+            constraintName: ck_status_valid
+            constraintBody: status IN ('ACTIVE', 'BLOCKED', 'EXPIRED')
+
+        - addCheckConstraint:
+            tableName: transfer
+            constraintName: ck_amount_positive
+            constraintBody: amount > 0
+
+        - addCheckConstraint:
+            tableName: users
+            constraintName: ck_role_valid
+            constraintBody: role IN ('USER', 'ADMIN')
