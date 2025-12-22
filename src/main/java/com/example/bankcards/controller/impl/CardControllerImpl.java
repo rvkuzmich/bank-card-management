@@ -5,7 +5,7 @@ import com.example.bankcards.dto.request.CardFilterRequest;
 import com.example.bankcards.dto.request.CardRequest;
 import com.example.bankcards.dto.response.ApiResponse;
 import com.example.bankcards.dto.response.CardResponse;
-import com.example.bankcards.service.CardService;
+import com.example.bankcards.service.impl.CardServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.math.BigDecimal;
 import java.security.Principal;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Card Management", description = "Bank card operations")
 public class CardControllerImpl implements CardController {
 
-  private final CardService cardService;
+  private final CardServiceImpl cardService;
 
   @Override
   public ResponseEntity<ApiResponse<CardResponse>> createCard(

@@ -4,7 +4,7 @@ import com.example.bankcards.controller.TransferController;
 import com.example.bankcards.dto.request.TransferRequest;
 import com.example.bankcards.dto.response.ApiResponse;
 import com.example.bankcards.dto.response.TransferResponse;
-import com.example.bankcards.service.TransferService;
+import com.example.bankcards.service.impl.TransferServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Transfer Management", description = "Money transfer operations")
 public class TransferControllerImpl implements TransferController {
 
-  private final TransferService transferService;
+  private final TransferServiceImpl transferService;
 
   @Override
   public ResponseEntity<ApiResponse<TransferResponse>> transfer(

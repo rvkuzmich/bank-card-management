@@ -7,7 +7,7 @@ import com.example.bankcards.dto.response.ApiResponse;
 import com.example.bankcards.dto.response.JwtResponse;
 import com.example.bankcards.dto.response.UserResponse;
 import com.example.bankcards.entity.User;
-import com.example.bankcards.service.UserService;
+import com.example.bankcards.service.impl.UserServiceImpl;
 import com.example.bankcards.security.JwtService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthControllerImpl implements AuthController {
 
   private final AuthenticationManager authenticationManager;
-  private final UserService userService;
+  private final UserServiceImpl userService;
   private final JwtService jwtService;
 
   @Override
