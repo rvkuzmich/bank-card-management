@@ -1,17 +1,17 @@
 package com.example.bankcards.controller.impl;
 
-import static com.example.bankcards.constants.TestConstants.INVALID_TEST_ROLE;
-import static com.example.bankcards.constants.TestConstants.INVALID_TEST_USER_ID;
+import static com.example.bankcards.constants.TestConstants.INVALID_ROLE;
+import static com.example.bankcards.constants.TestConstants.INVALID_USER_ID;
 import static com.example.bankcards.constants.TestConstants.SUCCESSFUL_OPERATION_MESSAGE;
-import static com.example.bankcards.constants.TestConstants.TEST_ADMIN_ROLE;
-import static com.example.bankcards.constants.TestConstants.TEST_FIRSTNAME;
-import static com.example.bankcards.constants.TestConstants.TEST_LASTNAME;
-import static com.example.bankcards.constants.TestConstants.TEST_PAGE_NUMBER;
-import static com.example.bankcards.constants.TestConstants.TEST_PAGE_SIZE;
-import static com.example.bankcards.constants.TestConstants.TEST_USERNAME;
-import static com.example.bankcards.constants.TestConstants.TEST_USER_EMAIL;
-import static com.example.bankcards.constants.TestConstants.TEST_USER_ID;
-import static com.example.bankcards.constants.TestConstants.TEST_USER_ROLE;
+import static com.example.bankcards.constants.TestConstants.ADMIN_ROLE;
+import static com.example.bankcards.constants.TestConstants.USER_FIRSTNAME;
+import static com.example.bankcards.constants.TestConstants.USER_LASTNAME;
+import static com.example.bankcards.constants.TestConstants.PAGE_NUMBER;
+import static com.example.bankcards.constants.TestConstants.PAGE_SIZE;
+import static com.example.bankcards.constants.TestConstants.USERNAME_USER;
+import static com.example.bankcards.constants.TestConstants.USER_EMAIL;
+import static com.example.bankcards.constants.TestConstants.USER_ID;
+import static com.example.bankcards.constants.TestConstants.USER_ROLE;
 import static com.example.bankcards.constants.TestConstants.USER_DISABLED_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.USER_DISABLE_URI;
 import static com.example.bankcards.constants.TestConstants.USER_ENABLE_MESSAGE;
@@ -25,7 +25,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,7 +39,6 @@ import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.exception.GlobalExceptionHandler;
 import com.example.bankcards.service.UserService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -83,11 +81,11 @@ class UserControllerImplTest {
         .build();
 
     userResponseDto = UserResponseDto.builder()
-        .id(TEST_USER_ID)
-        .username(TEST_USERNAME)
-        .email(TEST_USER_EMAIL)
-        .firstName(TEST_FIRSTNAME)
-        .lastName(TEST_LASTNAME)
+        .id(USER_ID)
+        .username(USERNAME_USER)
+        .email(USER_EMAIL)
+        .firstName(USER_FIRSTNAME)
+        .lastName(USER_LASTNAME)
         .role(Role.USER)
         .enabled(true)
         .createdAt(LocalDateTime.now())
@@ -96,129 +94,129 @@ class UserControllerImplTest {
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void getAllUsers_Success() throws Exception {
     List<UserResponseDto> users = Arrays.asList(userResponseDto);
     Page<UserResponseDto> page = new PageImpl<>(users, PageRequest
-        .of(TEST_PAGE_NUMBER, TEST_PAGE_SIZE), users.size());
+        .of(PAGE_NUMBER, PAGE_SIZE), users.size());
 
     when(userService.getAllUsers(any(Pageable.class))).thenReturn(page);
 
     mockMvc.perform(get(USER_URI)
-            .param("page", TEST_PAGE_NUMBER.toString())
-            .param("size", TEST_PAGE_SIZE.toString())
+            .param("page", PAGE_NUMBER.toString())
+            .param("size", PAGE_SIZE.toString())
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success", is(true)))
         .andExpect(jsonPath("$.message", is(SUCCESSFUL_OPERATION_MESSAGE)))
         .andExpect(jsonPath("$.data.content", hasSize(1)))
-        .andExpect(jsonPath("$.data.content[0].id", is(TEST_USER_ID)))
-        .andExpect(jsonPath("$.data.content[0].username", is(TEST_USERNAME)))
-        .andExpect(jsonPath("$.data.content[0].email", is(TEST_USER_EMAIL)))
-        .andExpect(jsonPath("$.data.content[0].role", is(TEST_USER_ROLE)))
+        .andExpect(jsonPath("$.data.content[0].id", is(USER_ID)))
+        .andExpect(jsonPath("$.data.content[0].username", is(USERNAME_USER)))
+        .andExpect(jsonPath("$.data.content[0].email", is(USER_EMAIL)))
+        .andExpect(jsonPath("$.data.content[0].role", is(USER_ROLE)))
         .andExpect(jsonPath("$.data.content[0].enabled", is(true)));
 
     verify(userService, times(1)).getAllUsers(any(Pageable.class));
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void updateUserRole_Success() throws Exception {
     UserResponseDto updatedUser = UserResponseDto.builder()
-        .id(TEST_USER_ID)
-        .username(TEST_USERNAME)
-        .email(TEST_USER_EMAIL)
+        .id(USER_ID)
+        .username(USERNAME_USER)
+        .email(USER_EMAIL)
         .role(Role.ADMIN)
         .enabled(true)
         .build();
 
-    when(userService.updateUserRole(eq(TEST_USER_ID), eq(Role.ADMIN)))
+    when(userService.updateUserRole(eq(USER_ID), eq(Role.ADMIN)))
         .thenReturn(updatedUser);
 
-    mockMvc.perform(patch(USER_UPDATE_ROLE_URI, TEST_USER_ID)
-            .param("role", TEST_ADMIN_ROLE)
+    mockMvc.perform(patch(USER_UPDATE_ROLE_URI, USER_ID)
+            .param("role", ADMIN_ROLE)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success", is(true)))
         .andExpect(jsonPath("$.message", is("User role updated")))
-        .andExpect(jsonPath("$.data.id", is(TEST_USER_ID)))
-        .andExpect(jsonPath("$.data.role", is(TEST_ADMIN_ROLE)));
+        .andExpect(jsonPath("$.data.id", is(USER_ID)))
+        .andExpect(jsonPath("$.data.role", is(ADMIN_ROLE)));
 
-    verify(userService, times(1)).updateUserRole(TEST_USER_ID, Role.ADMIN);
+    verify(userService, times(1)).updateUserRole(USER_ID, Role.ADMIN);
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void updateUserRole_InvalidRole_ShouldReturnBadRequest() throws Exception {
-    mockMvc.perform(patch(USER_UPDATE_ROLE_URI, TEST_USER_ID)
-            .param("role", INVALID_TEST_ROLE)
+    mockMvc.perform(patch(USER_UPDATE_ROLE_URI, USER_ID)
+            .param("role", INVALID_ROLE)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest());
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void updateUserRole_UserNotFound_ShouldHandleException() throws Exception {
-    when(userService.updateUserRole(eq(TEST_USER_ID), eq(Role.ADMIN)))
+    when(userService.updateUserRole(eq(USER_ID), eq(Role.ADMIN)))
         .thenThrow(new UsernameNotFoundException(USER_NOT_FOUND_MESSAGE));
 
-    mockMvc.perform(patch(USER_UPDATE_ROLE_URI, TEST_USER_ID)
-            .param("role", TEST_ADMIN_ROLE)
+    mockMvc.perform(patch(USER_UPDATE_ROLE_URI, USER_ID)
+            .param("role", ADMIN_ROLE)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.success", is(false)))
         .andExpect(jsonPath("$.message", is(USER_NOT_FOUND_MESSAGE)));
 
-    verify(userService, times(1)).updateUserRole(TEST_USER_ID, Role.ADMIN);
+    verify(userService, times(1)).updateUserRole(USER_ID, Role.ADMIN);
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void disableUser_Success() throws Exception {
-    doNothing().when(userService).disableUser(TEST_USER_ID);
+    doNothing().when(userService).disableUser(USER_ID);
 
-    mockMvc.perform(post(USER_DISABLE_URI, TEST_USER_ID)
+    mockMvc.perform(post(USER_DISABLE_URI, USER_ID)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success", is(true)))
         .andExpect(jsonPath("$.message", is(USER_DISABLED_MESSAGE)))
         .andExpect(jsonPath("$.data").doesNotExist());
 
-    verify(userService, times(1)).disableUser(TEST_USER_ID);
+    verify(userService, times(1)).disableUser(USER_ID);
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void enableUser_Success() throws Exception {
-    doNothing().when(userService).enableUser(TEST_USER_ID);
+    doNothing().when(userService).enableUser(USER_ID);
 
-    mockMvc.perform(post(USER_ENABLE_URI, TEST_USER_ID)
+    mockMvc.perform(post(USER_ENABLE_URI, USER_ID)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success", is(true)))
         .andExpect(jsonPath("$.message", is(USER_ENABLE_MESSAGE)))
         .andExpect(jsonPath("$.data").doesNotExist());
 
-    verify(userService, times(1)).enableUser(TEST_USER_ID);
+    verify(userService, times(1)).enableUser(USER_ID);
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void enableUser_UserNotFound_ShouldHandleException() throws Exception {
     doThrow(new UsernameNotFoundException(USER_ENABLE_MESSAGE))
-        .when(userService).enableUser(TEST_USER_ID);
+        .when(userService).enableUser(USER_ID);
 
-    mockMvc.perform(post(USER_ENABLE_URI, TEST_USER_ID)
+    mockMvc.perform(post(USER_ENABLE_URI, USER_ID)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.success", is(false)))
         .andExpect(jsonPath("$.message", is(USER_NOT_FOUND_MESSAGE)));
 
-    verify(userService, times(1)).enableUser(TEST_USER_ID);
+    verify(userService, times(1)).enableUser(USER_ID);
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void getAllUsers_WithCustomPagination() throws Exception {
     Page<UserResponseDto> page = Page.empty(PageRequest.of(2, 5));
     when(userService.getAllUsers(any(Pageable.class))).thenReturn(page);
@@ -235,9 +233,9 @@ class UserControllerImplTest {
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void getAllUsers_EmptyResult() throws Exception {
-    Pageable pageable = PageRequest.of(TEST_PAGE_NUMBER, TEST_PAGE_SIZE);
+    Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
     Page<UserResponseDto> emptyPage = new PageImpl<>(
         Collections.emptyList(), pageable, 0);
 
@@ -251,12 +249,12 @@ class UserControllerImplTest {
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void updateUserRole_WithInvalidUserIdFormat() throws Exception {
-    String invalidUserId = INVALID_TEST_USER_ID;
+    String invalidUserId = INVALID_USER_ID;
 
     mockMvc.perform(patch(USER_UPDATE_ROLE_URI, invalidUserId)
-            .param("role", TEST_ADMIN_ROLE)
+            .param("role", ADMIN_ROLE)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
 
@@ -264,44 +262,44 @@ class UserControllerImplTest {
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void disableUser_UserAlreadyDisabled_ShouldSucceed() throws Exception {
-    doNothing().when(userService).disableUser(TEST_USER_ID);
+    doNothing().when(userService).disableUser(USER_ID);
 
-    mockMvc.perform(post(USER_DISABLE_URI, TEST_USER_ID)
+    mockMvc.perform(post(USER_DISABLE_URI, USER_ID)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success", is(true)));
 
-    verify(userService, times(1)).disableUser(TEST_USER_ID);
+    verify(userService, times(1)).disableUser(USER_ID);
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void enableUser_UserAlreadyEnabled_ShouldSucceed() throws Exception {
-    doNothing().when(userService).enableUser(TEST_USER_ID);
+    doNothing().when(userService).enableUser(USER_ID);
 
-    mockMvc.perform(post(USER_ENABLE_URI, TEST_USER_ID)
+    mockMvc.perform(post(USER_ENABLE_URI, USER_ID)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success", is(true)));
 
-  verify(userService, times(1)).enableUser(TEST_USER_ID);
+  verify(userService, times(1)).enableUser(USER_ID);
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void updateUserRole_ConstraintViolation_ShouldReturnBadRequest() throws Exception {
-    mockMvc.perform(patch(USER_UPDATE_ROLE_URI, TEST_USER_ID)
+    mockMvc.perform(patch(USER_UPDATE_ROLE_URI, USER_ID)
             .param("role", "")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest());
   }
 
   @Test
-  @WithMockUser(roles = TEST_ADMIN_ROLE)
+  @WithMockUser(roles = ADMIN_ROLE)
   void getAllUsers_InvalidPageableParameters_ShouldHandleGracefully() throws Exception {
-    Pageable pageable = PageRequest.of(TEST_PAGE_NUMBER, TEST_PAGE_SIZE);
+    Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
     Page<UserResponseDto> emptyPage = new PageImpl<>(
         Collections.emptyList(), pageable, 0);
 

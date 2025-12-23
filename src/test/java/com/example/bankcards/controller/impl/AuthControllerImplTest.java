@@ -5,29 +5,29 @@ import static com.example.bankcards.constants.TestConstants.AUTHENTICATION_FAILE
 import static com.example.bankcards.constants.TestConstants.EMAIL_VALIDATION_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.FIRSTNAME_VALIDATION_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.INVALID_CREDENTIALS_MESSAGE;
-import static com.example.bankcards.constants.TestConstants.INVALID_TEST_EMAIL;
-import static com.example.bankcards.constants.TestConstants.INVALID_TEST_PASSWORD;
-import static com.example.bankcards.constants.TestConstants.INVALID_TEST_USERNAME;
+import static com.example.bankcards.constants.TestConstants.INVALID_EMAIL;
+import static com.example.bankcards.constants.TestConstants.INVALID_PASSWORD;
+import static com.example.bankcards.constants.TestConstants.INVALID_USERNAME;
 import static com.example.bankcards.constants.TestConstants.LOGIN_URI;
-import static com.example.bankcards.constants.TestConstants.NEW_TEST_FIRSTNAME;
-import static com.example.bankcards.constants.TestConstants.NEW_TEST_LASTNAME;
-import static com.example.bankcards.constants.TestConstants.NEW_TEST_USERNAME;
-import static com.example.bankcards.constants.TestConstants.NEW_TEST_USER_EMAIL;
+import static com.example.bankcards.constants.TestConstants.NEW_FIRSTNAME;
+import static com.example.bankcards.constants.TestConstants.NEW_LASTNAME;
+import static com.example.bankcards.constants.TestConstants.NEW_USERNAME;
+import static com.example.bankcards.constants.TestConstants.NEW_EMAIL;
 import static com.example.bankcards.constants.TestConstants.PASSWORD_VALIDATION_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.PROFILE_URI;
 import static com.example.bankcards.constants.TestConstants.REGISTER_URI;
 import static com.example.bankcards.constants.TestConstants.SUCCESSFUL_LOGIN_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.SUCCESSFUL_OPERATION_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.SUCCESSFUL_USER_REGISTRATION_MESSAGE;
-import static com.example.bankcards.constants.TestConstants.TEST_FIRSTNAME;
-import static com.example.bankcards.constants.TestConstants.TEST_JWT_TOKEN;
-import static com.example.bankcards.constants.TestConstants.TEST_LASTNAME;
-import static com.example.bankcards.constants.TestConstants.TEST_NONEXISTENT_USERNAME;
-import static com.example.bankcards.constants.TestConstants.TEST_PASSWORD;
-import static com.example.bankcards.constants.TestConstants.TEST_USERNAME;
-import static com.example.bankcards.constants.TestConstants.TEST_USER_EMAIL;
-import static com.example.bankcards.constants.TestConstants.TEST_USER_ID;
-import static com.example.bankcards.constants.TestConstants.TEST_USER_ROLE;
+import static com.example.bankcards.constants.TestConstants.USER_FIRSTNAME;
+import static com.example.bankcards.constants.TestConstants.JWT_TOKEN;
+import static com.example.bankcards.constants.TestConstants.USER_LASTNAME;
+import static com.example.bankcards.constants.TestConstants.NONEXISTENT_USERNAME;
+import static com.example.bankcards.constants.TestConstants.USER_PASSWORD;
+import static com.example.bankcards.constants.TestConstants.USERNAME_USER;
+import static com.example.bankcards.constants.TestConstants.USER_EMAIL;
+import static com.example.bankcards.constants.TestConstants.USER_ID;
+import static com.example.bankcards.constants.TestConstants.USER_ROLE;
 import static com.example.bankcards.constants.TestConstants.UNEXPECTED_ERROR_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.USERNAME_VALIDATION_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.USER_EXISTS_MESSAGE;
@@ -102,12 +102,12 @@ class AuthControllerImplTest {
         .setControllerAdvice(new GlobalExceptionHandler()).build();
 
     testUser = User.builder()
-        .id(TEST_USER_ID)
-        .username(TEST_USERNAME)
-        .email(TEST_USER_EMAIL)
-        .password(TEST_PASSWORD)
-        .firstName(TEST_FIRSTNAME)
-        .lastName(TEST_LASTNAME)
+        .id(USER_ID)
+        .username(USERNAME_USER)
+        .email(USER_EMAIL)
+        .password(USER_PASSWORD)
+        .firstName(USER_FIRSTNAME)
+        .lastName(USER_LASTNAME)
         .role(Role.USER)
         .enabled(true)
         .createdAt(LocalDateTime.now())
@@ -115,15 +115,15 @@ class AuthControllerImplTest {
         .build();
 
     validLoginRequestDto = new LoginRequestDto();
-    validLoginRequestDto.setUsername(TEST_USERNAME);
-    validLoginRequestDto.setPassword(TEST_PASSWORD);
+    validLoginRequestDto.setUsername(USERNAME_USER);
+    validLoginRequestDto.setPassword(USER_PASSWORD);
 
     validRegisterRequestDto = new RegisterRequestDto();
-    validRegisterRequestDto.setUsername(NEW_TEST_USERNAME);
-    validRegisterRequestDto.setEmail(NEW_TEST_USER_EMAIL);
-    validRegisterRequestDto.setPassword(TEST_PASSWORD);
-    validRegisterRequestDto.setFirstName(NEW_TEST_FIRSTNAME);
-    validRegisterRequestDto.setLastName(NEW_TEST_LASTNAME);
+    validRegisterRequestDto.setUsername(NEW_USERNAME);
+    validRegisterRequestDto.setEmail(NEW_EMAIL);
+    validRegisterRequestDto.setPassword(USER_PASSWORD);
+    validRegisterRequestDto.setFirstName(NEW_FIRSTNAME);
+    validRegisterRequestDto.setLastName(NEW_LASTNAME);
     validRegisterRequestDto.setRole(Role.USER);
 
     SecurityContextHolder.clearContext();
@@ -135,8 +135,8 @@ class AuthControllerImplTest {
     when(authentication.getPrincipal()).thenReturn(testUser);
     when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
         .thenReturn(authentication);
-    when(jwtService.generateToken(testUser)).thenReturn(TEST_JWT_TOKEN);
-    when(jwtService.getExpirationDate(TEST_JWT_TOKEN))
+    when(jwtService.generateToken(testUser)).thenReturn(JWT_TOKEN);
+    when(jwtService.getExpirationDate(JWT_TOKEN))
         .thenReturn(LocalDateTime.now().plusHours(2));
 
     mockMvc.perform(post(LOGIN_URI)
@@ -145,16 +145,16 @@ class AuthControllerImplTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.message").value(SUCCESSFUL_LOGIN_MESSAGE))
-        .andExpect(jsonPath("$.data.token").value(TEST_JWT_TOKEN))
-        .andExpect(jsonPath("$.data.username").value(TEST_USERNAME))
-        .andExpect(jsonPath("$.data.email").value(TEST_USER_EMAIL))
-        .andExpect(jsonPath("$.data.role").value(TEST_USER_ROLE))
+        .andExpect(jsonPath("$.data.token").value(JWT_TOKEN))
+        .andExpect(jsonPath("$.data.username").value(USERNAME_USER))
+        .andExpect(jsonPath("$.data.email").value(USER_EMAIL))
+        .andExpect(jsonPath("$.data.role").value(USER_ROLE))
         .andExpect(jsonPath("$.data.expiresAt").exists());
 
     verify(authenticationManager, times(1))
         .authenticate(any(UsernamePasswordAuthenticationToken.class));
     verify(jwtService, times(1)).generateToken(testUser);
-    verify(jwtService, times(1)).getExpirationDate(TEST_JWT_TOKEN);
+    verify(jwtService, times(1)).getExpirationDate(JWT_TOKEN);
   }
 
   @Test
@@ -177,7 +177,7 @@ class AuthControllerImplTest {
   @Test
   void login_WithMissingUsername_ShouldReturnBadRequest() throws Exception {
     LoginRequestDto invalidRequest = new LoginRequestDto();
-    invalidRequest.setPassword(TEST_PASSWORD);
+    invalidRequest.setPassword(USER_PASSWORD);
 
     mockMvc.perform(post(LOGIN_URI)
             .contentType(MediaType.APPLICATION_JSON)
@@ -192,8 +192,8 @@ class AuthControllerImplTest {
   @Test
   void login_WithShortUsername_ShouldReturnBadRequest() throws Exception {
     LoginRequestDto invalidRequest = new LoginRequestDto();
-    invalidRequest.setUsername(INVALID_TEST_USERNAME); // менее 3 символов
-    invalidRequest.setPassword(TEST_PASSWORD);
+    invalidRequest.setUsername(INVALID_USERNAME); // менее 3 символов
+    invalidRequest.setPassword(USER_PASSWORD);
 
     mockMvc.perform(post(LOGIN_URI)
             .contentType(MediaType.APPLICATION_JSON)
@@ -209,8 +209,8 @@ class AuthControllerImplTest {
   @Test
   void login_WithShortPassword_ShouldReturnBadRequest() throws Exception {
     LoginRequestDto invalidRequest = new LoginRequestDto();
-    invalidRequest.setUsername(TEST_USERNAME);
-    invalidRequest.setPassword(INVALID_TEST_PASSWORD);
+    invalidRequest.setUsername(USERNAME_USER);
+    invalidRequest.setPassword(INVALID_PASSWORD);
 
     mockMvc.perform(post(LOGIN_URI)
             .contentType(MediaType.APPLICATION_JSON)
@@ -226,11 +226,11 @@ class AuthControllerImplTest {
   @Test
   void register_WithValidRequest_ShouldReturnCreated() throws Exception {
     UserResponseDto userResponseDto = UserResponseDto.builder()
-        .id(TEST_USER_ID)
-        .username(NEW_TEST_USERNAME)
-        .email(NEW_TEST_USER_EMAIL)
-        .firstName(NEW_TEST_FIRSTNAME)
-        .lastName(NEW_TEST_LASTNAME)
+        .id(USER_ID)
+        .username(NEW_USERNAME)
+        .email(NEW_EMAIL)
+        .firstName(NEW_FIRSTNAME)
+        .lastName(NEW_LASTNAME)
         .role(Role.USER)
         .enabled(true)
         .createdAt(LocalDateTime.now())
@@ -246,11 +246,11 @@ class AuthControllerImplTest {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.message").value(SUCCESSFUL_USER_REGISTRATION_MESSAGE))
         .andExpect(jsonPath("$.data.id").value(userResponseDto.getId()))
-        .andExpect(jsonPath("$.data.username").value(NEW_TEST_USERNAME))
-        .andExpect(jsonPath("$.data.email").value(NEW_TEST_USER_EMAIL))
-        .andExpect(jsonPath("$.data.firstName").value(NEW_TEST_FIRSTNAME))
-        .andExpect(jsonPath("$.data.lastName").value(NEW_TEST_LASTNAME))
-        .andExpect(jsonPath("$.data.role").value(TEST_USER_ROLE))
+        .andExpect(jsonPath("$.data.username").value(NEW_USERNAME))
+        .andExpect(jsonPath("$.data.email").value(NEW_EMAIL))
+        .andExpect(jsonPath("$.data.firstName").value(NEW_FIRSTNAME))
+        .andExpect(jsonPath("$.data.lastName").value(NEW_LASTNAME))
+        .andExpect(jsonPath("$.data.role").value(USER_ROLE))
         .andExpect(jsonPath("$.data.enabled").value(true))
         .andExpect(jsonPath("$.data.cardCount").value(0));
 
@@ -260,9 +260,9 @@ class AuthControllerImplTest {
   @Test
   void register_WithInvalidEmail_ShouldReturnBadRequest() throws Exception {
     RegisterRequestDto invalidRequest = new RegisterRequestDto();
-    invalidRequest.setUsername(NEW_TEST_USERNAME);
-    invalidRequest.setEmail(INVALID_TEST_EMAIL); // невалидный email
-    invalidRequest.setPassword(TEST_PASSWORD);
+    invalidRequest.setUsername(NEW_USERNAME);
+    invalidRequest.setEmail(INVALID_EMAIL); // невалидный email
+    invalidRequest.setPassword(USER_PASSWORD);
 
     mockMvc.perform(post(REGISTER_URI)
             .contentType(MediaType.APPLICATION_JSON)
@@ -292,9 +292,9 @@ class AuthControllerImplTest {
   @Test
   void register_WithTooLongFirstName_ShouldReturnBadRequest() throws Exception {
     RegisterRequestDto invalidRequest = new RegisterRequestDto();
-    invalidRequest.setUsername(NEW_TEST_USERNAME);
-    invalidRequest.setEmail(NEW_TEST_USER_EMAIL);
-    invalidRequest.setPassword(INVALID_TEST_PASSWORD);
+    invalidRequest.setUsername(NEW_USERNAME);
+    invalidRequest.setEmail(NEW_EMAIL);
+    invalidRequest.setPassword(INVALID_PASSWORD);
     invalidRequest.setFirstName("A".repeat(51));
 
     mockMvc.perform(post(REGISTER_URI)
@@ -322,9 +322,9 @@ class AuthControllerImplTest {
         .cardCount(5)
         .build();
 
-    when(userService.getUserProfile(TEST_USERNAME)).thenReturn(userResponseDto);
+    when(userService.getUserProfile(USERNAME_USER)).thenReturn(userResponseDto);
 
-    Principal principal = () -> TEST_USERNAME;
+    Principal principal = () -> USERNAME_USER;
 
     mockMvc.perform(get(PROFILE_URI)
             .principal(principal))
@@ -332,22 +332,22 @@ class AuthControllerImplTest {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.message").value(SUCCESSFUL_OPERATION_MESSAGE))
         .andExpect(jsonPath("$.data.id").value(testUser.getId()))
-        .andExpect(jsonPath("$.data.username").value(TEST_USERNAME))
-        .andExpect(jsonPath("$.data.email").value(TEST_USER_EMAIL))
-        .andExpect(jsonPath("$.data.firstName").value(TEST_FIRSTNAME))
-        .andExpect(jsonPath("$.data.lastName").value(TEST_LASTNAME))
-        .andExpect(jsonPath("$.data.role").value(TEST_USER_ROLE))
+        .andExpect(jsonPath("$.data.username").value(USERNAME_USER))
+        .andExpect(jsonPath("$.data.email").value(USER_EMAIL))
+        .andExpect(jsonPath("$.data.firstName").value(USER_FIRSTNAME))
+        .andExpect(jsonPath("$.data.lastName").value(USER_LASTNAME))
+        .andExpect(jsonPath("$.data.role").value(USER_ROLE))
         .andExpect(jsonPath("$.data.cardCount").value(5));
 
-    verify(userService, times(1)).getUserProfile(TEST_USERNAME);
+    verify(userService, times(1)).getUserProfile(USERNAME_USER);
   }
 
   @Test
   void getProfile_WithNonExistentUser_ShouldReturnNotFound() throws Exception {
-    when(userService.getUserProfile(TEST_NONEXISTENT_USERNAME))
+    when(userService.getUserProfile(NONEXISTENT_USERNAME))
         .thenThrow(new UsernameNotFoundException(USER_NOT_FOUND_MESSAGE));
 
-    Principal principal = () -> TEST_NONEXISTENT_USERNAME;
+    Principal principal = () -> NONEXISTENT_USERNAME;
 
     mockMvc.perform(get(PROFILE_URI)
             .principal(principal))
@@ -355,7 +355,7 @@ class AuthControllerImplTest {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.message").value(USER_NOT_FOUND_MESSAGE));
 
-    verify(userService, times(1)).getUserProfile(TEST_NONEXISTENT_USERNAME);
+    verify(userService, times(1)).getUserProfile(NONEXISTENT_USERNAME);
   }
 
   @Test

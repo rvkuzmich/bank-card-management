@@ -2,14 +2,14 @@ package com.example.bankcards.controller.impl;
 
 import static com.example.bankcards.constants.TestConstants.AMOUNT_IS_REQUIRED_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.SUCCESSFUL_TRANSFER_MESSAGE;
-import static com.example.bankcards.constants.TestConstants.TEST_BALANCE;
-import static com.example.bankcards.constants.TestConstants.TEST_DESCRIPTION;
-import static com.example.bankcards.constants.TestConstants.TEST_PAGE_NUMBER;
-import static com.example.bankcards.constants.TestConstants.TEST_PAGE_SIZE;
-import static com.example.bankcards.constants.TestConstants.TEST_SOURCE_CARD;
-import static com.example.bankcards.constants.TestConstants.TEST_TARGET_CARD;
-import static com.example.bankcards.constants.TestConstants.TEST_TRANSFER_ID;
-import static com.example.bankcards.constants.TestConstants.TEST_USERNAME;
+import static com.example.bankcards.constants.TestConstants.BALANCE;
+import static com.example.bankcards.constants.TestConstants.TRANSFER_DESCRIPTION;
+import static com.example.bankcards.constants.TestConstants.PAGE_NUMBER;
+import static com.example.bankcards.constants.TestConstants.PAGE_SIZE;
+import static com.example.bankcards.constants.TestConstants.SOURCE_CARD_ID;
+import static com.example.bankcards.constants.TestConstants.TARGET_CARD_ID;
+import static com.example.bankcards.constants.TestConstants.TRANSFER_ID;
+import static com.example.bankcards.constants.TestConstants.USERNAME_USER;
 import static com.example.bankcards.constants.TestConstants.TRANSFER_HISTORY_URI;
 import static com.example.bankcards.constants.TestConstants.TRANSFER_URI;
 import static com.example.bankcards.constants.TestConstants.VALIDATION_FAILED_MESSAGE;
@@ -70,7 +70,7 @@ class TransferControllerImplTest {
         .setControllerAdvice(new GlobalExceptionHandler())
         .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
         .build();
-    principal = () -> TEST_USERNAME;
+    principal = () -> USERNAME_USER;
   }
 
   @Test
@@ -78,7 +78,7 @@ class TransferControllerImplTest {
     TransferRequestDto request = createValidTransferRequest();
     TransferResponseDto response = createTransferResponse();
 
-    when(transferService.transferBetweenOwnCards(any(TransferRequestDto.class), eq(TEST_USERNAME)))
+    when(transferService.transferBetweenOwnCards(any(TransferRequestDto.class), eq(USERNAME_USER)))
         .thenReturn(response);
 
     mockMvc.perform(post(TRANSFER_URI)
@@ -87,8 +87,8 @@ class TransferControllerImplTest {
             .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data.id").value(TEST_TRANSFER_ID))
-        .andExpect(jsonPath("$.data.amount").value(TEST_BALANCE))
+        .andExpect(jsonPath("$.data.id").value(TRANSFER_ID))
+        .andExpect(jsonPath("$.data.amount").value(BALANCE))
         .andExpect(jsonPath("$.message").value(SUCCESSFUL_TRANSFER_MESSAGE));
   }
 
@@ -162,20 +162,20 @@ class TransferControllerImplTest {
 
   @Test
   void getTransferHistory_ShouldReturnPage_WhenValidRequest() throws Exception {
-    Pageable pageable = PageRequest.of(TEST_PAGE_NUMBER, TEST_PAGE_SIZE);
+    Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
     List<TransferResponseDto> transfers = List.of(
         createTransferResponse(),
         createTransferResponse()
     );
     Page<TransferResponseDto> page = new PageImpl<>(transfers, pageable, transfers.size());
 
-    when(transferService.getTransferHistory(eq(TEST_USERNAME), any(Pageable.class)))
+    when(transferService.getTransferHistory(eq(USERNAME_USER), any(Pageable.class)))
         .thenReturn(page);
 
     mockMvc.perform(get(TRANSFER_HISTORY_URI)
             .principal(principal)
-            .param("page", TEST_PAGE_NUMBER.toString())
-            .param("size", TEST_PAGE_SIZE.toString())
+            .param("page", PAGE_NUMBER.toString())
+            .param("size", PAGE_SIZE.toString())
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -187,16 +187,16 @@ class TransferControllerImplTest {
 
   @Test
   void getTransferHistory_ShouldReturnEmptyPage_WhenNoTransfers() throws Exception {
-    Pageable pageable = PageRequest.of(TEST_PAGE_NUMBER, TEST_PAGE_SIZE);
+    Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
     Page<TransferResponseDto> page = Page.empty(pageable);
 
-    when(transferService.getTransferHistory(eq(TEST_USERNAME), any(Pageable.class)))
+    when(transferService.getTransferHistory(eq(USERNAME_USER), any(Pageable.class)))
         .thenReturn(page);
 
     mockMvc.perform(get(TRANSFER_HISTORY_URI)
             .principal(principal)
-            .param("page", TEST_PAGE_NUMBER.toString())
-            .param("size", TEST_PAGE_SIZE.toString())
+            .param("page", PAGE_NUMBER.toString())
+            .param("size", PAGE_SIZE.toString())
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -206,10 +206,10 @@ class TransferControllerImplTest {
 
   @Test
   void getTransferHistory_ShouldUseDefaultPagination_WhenNoParams() throws Exception {
-    Pageable pageable = PageRequest.of(TEST_PAGE_NUMBER, TEST_PAGE_SIZE);
+    Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
     Page<TransferResponseDto> page = Page.empty(pageable);
 
-    when(transferService.getTransferHistory(eq(TEST_USERNAME), any(Pageable.class)))
+    when(transferService.getTransferHistory(eq(USERNAME_USER), any(Pageable.class)))
         .thenReturn(page);
 
     mockMvc.perform(get(TRANSFER_HISTORY_URI)
@@ -248,22 +248,22 @@ class TransferControllerImplTest {
 
   private TransferRequestDto createValidTransferRequest() {
     TransferRequestDto request = new TransferRequestDto();
-    request.setFromCardId(TEST_SOURCE_CARD);
-    request.setToCardId(TEST_TARGET_CARD);
-    request.setAmount(TEST_BALANCE);
-    request.setDescription(TEST_DESCRIPTION);
+    request.setFromCardId(SOURCE_CARD_ID);
+    request.setToCardId(TARGET_CARD_ID);
+    request.setAmount(BALANCE);
+    request.setDescription(TRANSFER_DESCRIPTION);
     return request;
   }
 
   private TransferResponseDto createTransferResponse() {
     TransferResponseDto response = new TransferResponseDto();
-    response.setId(TEST_TRANSFER_ID);
-    response.setFromCardId(TEST_SOURCE_CARD);
+    response.setId(TRANSFER_ID);
+    response.setFromCardId(SOURCE_CARD_ID);
     response.setFromCardMaskedNumber("****1234");
-    response.setToCardId(TEST_TARGET_CARD);
+    response.setToCardId(TARGET_CARD_ID);
     response.setToCardMaskedNumber("****5678");
-    response.setAmount(TEST_BALANCE);
-    response.setDescription(TEST_DESCRIPTION);
+    response.setAmount(BALANCE);
+    response.setDescription(TRANSFER_DESCRIPTION);
     response.setTimestamp(LocalDateTime.now());
     return response;
   }

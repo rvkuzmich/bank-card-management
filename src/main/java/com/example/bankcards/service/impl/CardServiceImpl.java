@@ -10,15 +10,16 @@ import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.entity.RequestStatus;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.CardNotFoundException;
+import com.example.bankcards.mapper.Mapper;
 import com.example.bankcards.repository.CardBlockRequestRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.CardService;
+import com.example.bankcards.util.CardNumberGenerator;
 import com.example.bankcards.util.EncryptionUtil;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +40,8 @@ public class CardServiceImpl implements CardService {
   private final CardRepository cardRepository;
   private final UserRepository userRepository;
   private final EncryptionUtil encryptionUtil;
+  private final Mapper mapper;
+  private final CardNumberGenerator  cardNumberGenerator;
 
   @Override
   @Transactional
@@ -45,7 +49,7 @@ public class CardServiceImpl implements CardService {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-    String cardNumber = generateCardNumber();
+    String cardNumber = cardNumberGenerator.generateCardNumber();
     String encryptedCardNumber = encryptionUtil.encrypt(cardNumber);
     String maskedNumber = encryptionUtil.maskCardNumber(cardNumber);
 
@@ -60,7 +64,7 @@ public class CardServiceImpl implements CardService {
         .build();
 
     card = cardRepository.save(card);
-    return mapToResponse(card);
+    return mapper.toCardResponseDto(card);
   }
 
   @Override
@@ -73,23 +77,42 @@ public class CardServiceImpl implements CardService {
     Specification<Card> spec = Specification.where((root, query, cb) ->
         cb.equal(root.get("user").get("id"), user.getId()));
 
-    if (filter.getStatus() != null) {
-      spec = spec.and((root, query, cb) ->
-          cb.equal(root.get("status"), filter.getStatus()));
-    }
+    if (filter != null) {
+      if (filter.getStatus() != null) {
+        spec = spec.and((root, query, cb) ->
+            cb.equal(root.get("status"), filter.getStatus()));
+      }
 
-    if (filter.getMinBalance() != null) {
-      spec = spec.and((root, query, cb) ->
-          cb.greaterThanOrEqualTo(root.get("balance"), filter.getMinBalance()));
-    }
+      if (filter.getMinBalance() != null) {
+        spec = spec.and((root, query, cb) ->
+            cb.greaterThanOrEqualTo(root.get("balance"), filter.getMinBalance()));
+      }
 
-    if (filter.getMaxBalance() != null) {
-      spec = spec.and((root, query, cb) ->
-          cb.lessThanOrEqualTo(root.get("balance"), filter.getMaxBalance()));
+      if (filter.getMaxBalance() != null) {
+        spec = spec.and((root, query, cb) ->
+            cb.lessThanOrEqualTo(root.get("balance"), filter.getMaxBalance()));
+      }
+
+      if (filter.getExpiryFrom() != null) {
+        spec = spec.and((root, query, cb) ->
+            cb.greaterThanOrEqualTo(root.get("expiryDate"), filter.getExpiryFrom()));
+      }
+
+      if (filter.getExpiryTo() != null) {
+        spec = spec.and((root, query, cb) ->
+            cb.lessThanOrEqualTo(root.get("expiryDate"), filter.getExpiryTo()));
+      }
+
+      if (StringUtils.hasText(filter.getCardholderContains())) {
+        spec = spec.and((root, query, cb) ->
+            cb.like(cb.lower(root.get("cardholder")),
+                "%" + filter.getCardholderContains().toLowerCase() + "%"));
+      }
     }
 
     Page<Card> cards = cardRepository.findAll(spec, pageable);
-    return cards.map(this::mapToResponse);
+
+    return cards.map(Mapper::toCardResponseDtoStatic);
   }
 
   @Override
@@ -110,7 +133,7 @@ public class CardServiceImpl implements CardService {
 
     log.info("Card {} blocked by admin {}", cardId, adminUsername);
 
-    return mapToResponse(card);
+    return mapper.toCardResponseDto(card);
   }
 
   @Override
@@ -181,7 +204,7 @@ public class CardServiceImpl implements CardService {
 
     log.info("Card {} block approved by admin {}", cardId, adminUsername);
 
-    return mapToResponse(card);
+    return mapper.toCardResponseDto(card);
   }
 
   @Override
@@ -200,7 +223,7 @@ public class CardServiceImpl implements CardService {
 
     log.info("Card {} activated by admin {}", cardId, adminUsername);
 
-    return mapToResponse(card);
+    return mapper.toCardResponseDto(card);
   }
 
   @Override
@@ -216,29 +239,5 @@ public class CardServiceImpl implements CardService {
 
     return cardRepository.findByIdAndUserId(cardId, user.getId())
         .orElseThrow(() -> new CardNotFoundException("Card not found"));
-  }
-
-  private String generateCardNumber() {
-    Random random = new Random();
-    StringBuilder cardNumber = new StringBuilder();
-    for (int i = 0; i < 4; i++) {
-      cardNumber.append(String.format("%04d", random.nextInt(10000)));
-      if (i < 3) {
-        cardNumber.append(" ");
-      }
-    }
-    return cardNumber.toString();
-  }
-
-  private CardResponseDto mapToResponse(Card card) {
-    return CardResponseDto.builder()
-        .id(card.getId())
-        .maskedNumber(card.getMaskedNumber())
-        .cardholder(card.getCardholder())
-        .expiryDate(card.getExpiryDate())
-        .status(card.getStatus())
-        .balance(card.getBalance())
-        .createdAt(card.getCreatedAt())
-        .build();
   }
 }

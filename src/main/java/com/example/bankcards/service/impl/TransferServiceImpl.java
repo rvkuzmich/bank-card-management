@@ -7,6 +7,7 @@ import com.example.bankcards.entity.Transfer;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.CardNotFoundException;
 import com.example.bankcards.exception.InsufficientBalanceException;
+import com.example.bankcards.mapper.Mapper;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.TransferRepository;
 import com.example.bankcards.repository.UserRepository;
@@ -81,7 +82,7 @@ public class TransferServiceImpl implements TransferService {
 
     Page<Transfer> transfers = transferRepository.findByUserId(user.getId(), pageable);
 
-    return transfers.map(this::mapToTransferResponse);
+    return transfers.map(Mapper::toTransferResponseStatic);
   }
 
   @Override
@@ -100,7 +101,7 @@ public class TransferServiceImpl implements TransferService {
 
     Page<Transfer> transfers = transferRepository.findByCardId(cardId, pageable);
 
-    return transfers.map(this::mapToTransferResponse);
+    return transfers.map(Mapper::toTransferResponseStatic);
   }
 
   private void validateTransfer(Card fromCard, Card toCard, BigDecimal amount) {
@@ -123,18 +124,5 @@ public class TransferServiceImpl implements TransferService {
     if (fromCard.getId().equals(toCard.getId())) {
       throw new IllegalArgumentException("Cannot transfer to the same card");
     }
-  }
-
-  private TransferResponseDto mapToTransferResponse(Transfer transfer) {
-    return TransferResponseDto.builder()
-        .id(transfer.getId())
-        .fromCardId(transfer.getFromCard().getId())
-        .fromCardMaskedNumber(transfer.getFromCard().getMaskedNumber())
-        .toCardId(transfer.getToCard().getId())
-        .toCardMaskedNumber(transfer.getToCard().getMaskedNumber())
-        .amount(transfer.getAmount())
-        .description(transfer.getDescription())
-        .timestamp(transfer.getTimestamp())
-        .build();
   }
 }

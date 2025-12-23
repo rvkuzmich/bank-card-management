@@ -4,6 +4,7 @@ import com.example.bankcards.dto.request.RegisterRequestDto;
 import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.entity.User;
+import com.example.bankcards.mapper.Mapper;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+  private final Mapper mapper;
 
   @Override
   public UserResponseDto registerUser(RegisterRequestDto request) {
@@ -41,7 +43,7 @@ public class UserServiceImpl implements UserService {
     user = userRepository.save(user);
     log.info("User registered successfully: {}", user.getUsername());
 
-    return mapToResponse(user);
+    return mapper.toUserResponseDto(user);
   }
 
   @Override
@@ -49,13 +51,13 @@ public class UserServiceImpl implements UserService {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-    return mapToResponse(user);
+    return mapper.toUserResponseDto(user);
   }
 
   @Override
   public Page<UserResponseDto> getAllUsers(Pageable pageable) {
     return userRepository.findAll(pageable)
-        .map(this::mapToResponse);
+        .map(mapper::toUserResponseDto);
   }
 
   @Override
@@ -67,7 +69,7 @@ public class UserServiceImpl implements UserService {
     user = userRepository.save(user);
 
     log.info("User role updated: {} -> {}", user.getUsername(), role);
-    return mapToResponse(user);
+    return mapper.toUserResponseDto(user);
   }
 
   @Override
@@ -100,21 +102,5 @@ public class UserServiceImpl implements UserService {
     if (userRepository.existsByEmail(email)) {
       throw new IllegalArgumentException("Email already exists");
     }
-  }
-
-  private UserResponseDto mapToResponse(User user) {
-    int cardCount = user.getCards() != null ? user.getCards().size() : 0;
-
-    return UserResponseDto.builder()
-        .id(user.getId())
-        .username(user.getUsername())
-        .email(user.getEmail())
-        .firstName(user.getFirstName())
-        .lastName(user.getLastName())
-        .role(user.getRole())
-        .enabled(user.isEnabled())
-        .createdAt(user.getCreatedAt())
-        .cardCount(cardCount)
-        .build();
   }
 }
