@@ -41,7 +41,7 @@ public class CardServiceImpl implements CardService {
   private final UserRepository userRepository;
   private final EncryptionUtil encryptionUtil;
   private final Mapper mapper;
-  private final CardNumberGenerator  cardNumberGenerator;
+  private final CardNumberGenerator cardNumberGenerator;
 
   @Override
   @Transactional

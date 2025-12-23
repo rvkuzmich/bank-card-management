@@ -28,7 +28,8 @@ public interface AuthController {
   @Operation(
       summary = "Регистрация нового пользователя",
       description = "Создает новый аккаунт пользователя")
-  ResponseEntity<ApiResponse<UserResponseDto>> register(@Valid @RequestBody RegisterRequestDto request);
+  ResponseEntity<ApiResponse<UserResponseDto>> register(
+      @Valid @RequestBody RegisterRequestDto request);
 
   @GetMapping("/profile")
   @PreAuthorize("hasAnyRole('USER', 'ADMIN')")

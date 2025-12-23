@@ -21,11 +21,11 @@ public class TestConstants {
   public static final String USER_ENABLE_URI = "/api/users/{userId}/enable";
   public static final String USER_UPDATE_ROLE_URI = "/api/users/{userId}/role";
 
-  public static final String ANOTHER_USER_ID = UUID.randomUUID().toString();;
+  public static final String ANOTHER_USER_ID = UUID.randomUUID().toString();
   public static final String ANOTHER_USERNAME = "another-user-name";
-  public static final String SOURCE_CARD_NUMBER = "4111 1111 1111 1111";
+  public static final String SOURCE_CARD_NUMBER = "4111111111111111";
   public static final String SOURCE_MASKED_CARD_NUMBER = "****1111";
-  public static final String DESTINATION_CARD_NUMBER = "4222 2222 2222 2222";
+  public static final String DESTINATION_CARD_NUMBER = "4222222222222222";
   public static final String DESTINATION_MASKED_CARD_NUMBER = "****2222";
   public static final String ENCODED_PASSWORD = "encodedPassword";
   public static final String INVALID_CARDHOLDER = "J";
@@ -42,7 +42,7 @@ public class TestConstants {
   public static final String NEW_EMAIL = "new@example.com";
   public static final String BLOCK_REQUEST_ID = UUID.randomUUID().toString();
   public static final String CARD_ID = UUID.randomUUID().toString();
-  public static final String CARD_NUMBER = "1234 5678 1234 5678";
+  public static final String CARD_NUMBER = "1234567812345678";
   public static final String CARDHOLDER = "Ivan Ivanov";
   public static final String CARD_STATUS_ACTIVE = "ACTIVE";
   public static final String CARD_STATUS_BLOCKED = "BLOCKED";

@@ -28,7 +28,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -284,7 +283,7 @@ class UserControllerImplTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success", is(true)));
 
-  verify(userService, times(1)).enableUser(USER_ID);
+    verify(userService, times(1)).enableUser(USER_ID);
   }
 
   @Test

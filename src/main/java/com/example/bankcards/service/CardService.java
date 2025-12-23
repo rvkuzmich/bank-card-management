@@ -12,7 +12,8 @@ public interface CardService {
 
   CardResponseDto createCard(CardRequestDto request, String username);
 
-  Page<CardResponseDto> getUserCards(String username, CardFilterRequestDto filter, Pageable pageable);
+  Page<CardResponseDto> getUserCards(String username, CardFilterRequestDto filter,
+      Pageable pageable);
 
   CardResponseDto blockCard(String cardId, String username);
 

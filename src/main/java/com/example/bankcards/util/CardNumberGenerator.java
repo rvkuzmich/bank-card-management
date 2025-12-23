@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class CardNumberGenerator {
+
   private final Random random = new Random();
 
   public String generateCardNumber() {

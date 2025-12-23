@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class BlockRequestResponseDto {
+
   private String cardId;
   private CardStatus cardStatus;
   private boolean hasPendingRequest;

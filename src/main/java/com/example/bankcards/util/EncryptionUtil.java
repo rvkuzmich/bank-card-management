@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EncryptionUtil {
+
   @Value("${encryption.secret-key}")
   private String secretKey;
 

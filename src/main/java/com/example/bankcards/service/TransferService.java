@@ -11,5 +11,6 @@ public interface TransferService {
 
   Page<TransferResponseDto> getTransferHistory(String username, Pageable pageable);
 
-  Page<TransferResponseDto> getCardTransferHistory(String cardId, String username, Pageable pageable);
+  Page<TransferResponseDto> getCardTransferHistory(String cardId, String username,
+      Pageable pageable);
 }

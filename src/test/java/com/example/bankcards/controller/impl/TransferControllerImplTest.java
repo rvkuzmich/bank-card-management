@@ -88,7 +88,8 @@ class TransferControllerImplTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.id").value(TRANSFER_ID))
-        .andExpect(jsonPath("$.data.amount").value(BALANCE))
+        .andExpect(jsonPath("$.data.amount").isNumber())
+        .andExpect(jsonPath("$.data.amount").value(1500.5))
         .andExpect(jsonPath("$.message").value(SUCCESSFUL_TRANSFER_MESSAGE));
   }
 

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface UserService {
+
   UserResponseDto registerUser(RegisterRequestDto request);
 
   UserResponseDto getUserProfile(String username);
