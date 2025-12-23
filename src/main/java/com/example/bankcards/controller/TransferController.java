@@ -1,8 +1,8 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.request.TransferRequest;
+import com.example.bankcards.dto.request.TransferRequestDto;
 import com.example.bankcards.dto.response.ApiResponse;
-import com.example.bankcards.dto.response.TransferResponse;
+import com.example.bankcards.dto.response.TransferResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.security.Principal;
@@ -22,14 +22,14 @@ public interface TransferController {
   @PostMapping
   @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
   @Operation(summary = "Transfer between cards", description = "Transfer money between user's own cards")
-  ResponseEntity<ApiResponse<TransferResponse>> transfer(
-      @Valid @RequestBody TransferRequest request,
+  ResponseEntity<ApiResponse<TransferResponseDto>> transfer(
+      @Valid @RequestBody TransferRequestDto request,
       Principal principal);
 
   @GetMapping("/history")
   @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
   @Operation(summary = "Get transfer history", description = "Get user's transfer history")
-  ResponseEntity<ApiResponse<Page<TransferResponse>>> getTransferHistory(
+  ResponseEntity<ApiResponse<Page<TransferResponseDto>>> getTransferHistory(
       @PageableDefault(size = 20) Pageable pageable,
       Principal principal);
 }

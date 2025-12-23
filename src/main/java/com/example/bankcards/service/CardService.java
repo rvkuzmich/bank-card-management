@@ -1,21 +1,26 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.request.CardFilterRequest;
-import com.example.bankcards.dto.request.CardRequest;
-import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.dto.request.CardFilterRequestDto;
+import com.example.bankcards.dto.request.CardRequestDto;
+import com.example.bankcards.dto.response.BlockRequestResponseDto;
+import com.example.bankcards.dto.response.CardResponseDto;
 import java.math.BigDecimal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CardService {
 
-  CardResponse createCard(CardRequest request, String username);
+  CardResponseDto createCard(CardRequestDto request, String username);
 
-  Page<CardResponse> getUserCards(String username, CardFilterRequest filter, Pageable pageable);
+  Page<CardResponseDto> getUserCards(String username, CardFilterRequestDto filter, Pageable pageable);
 
-  CardResponse blockCard(String cardId, String username);
+  CardResponseDto blockCard(String cardId, String username);
 
-  CardResponse activateCard(String cardId, String username);
+  CardResponseDto activateCard(String cardId, String username);
 
   BigDecimal getCardBalance(String cardId, String username);
+
+  BlockRequestResponseDto requestCardBlock(String cardId, String username);
+
+  CardResponseDto approveBlockCard(String cardId, String adminUsername);
 }

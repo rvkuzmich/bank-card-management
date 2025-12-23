@@ -1,19 +1,19 @@
 package com.example.bankcards.service;
 
-import com.example.bankcards.dto.request.RegisterRequest;
-import com.example.bankcards.dto.response.UserResponse;
+import com.example.bankcards.dto.request.RegisterRequestDto;
+import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.entity.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface UserService {
-  UserResponse registerUser(RegisterRequest request);
+  UserResponseDto registerUser(RegisterRequestDto request);
 
-  UserResponse getUserProfile(String username);
+  UserResponseDto getUserProfile(String username);
 
-  Page<UserResponse> getAllUsers(Pageable pageable);
+  Page<UserResponseDto> getAllUsers(Pageable pageable);
 
-  UserResponse updateUserRole(String userId, Role role);
+  UserResponseDto updateUserRole(String userId, Role role);
 
   void disableUser(String userId);
 

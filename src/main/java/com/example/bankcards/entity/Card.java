@@ -66,6 +66,12 @@ public class Card {
   @Column(name = "updated_at", nullable = false)
   private LocalDateTime updatedAt;
 
+  @Column(name = "blocked_at")
+  private LocalDateTime blockedAt;
+
+  @Column(name = "blocked_by")
+  private String blockedBy;
+
   @PrePersist
   protected void onCreate() {
     createdAt = LocalDateTime.now();

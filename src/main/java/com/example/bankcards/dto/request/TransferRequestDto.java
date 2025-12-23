@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TransferRequest {
+public class TransferRequestDto {
 
   @NotBlank(message = "Source card ID is required")
   private String fromCardId;

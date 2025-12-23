@@ -1,13 +1,13 @@
 package com.example.bankcards.controller.impl;
 
 import com.example.bankcards.controller.AuthController;
-import com.example.bankcards.dto.request.LoginRequest;
-import com.example.bankcards.dto.request.RegisterRequest;
+import com.example.bankcards.dto.request.LoginRequestDto;
+import com.example.bankcards.dto.request.RegisterRequestDto;
 import com.example.bankcards.dto.response.ApiResponse;
-import com.example.bankcards.dto.response.JwtResponse;
-import com.example.bankcards.dto.response.UserResponse;
+import com.example.bankcards.dto.response.JwtResponseDto;
+import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.entity.User;
-import com.example.bankcards.service.impl.UserServiceImpl;
+import com.example.bankcards.service.UserService;
 import com.example.bankcards.security.JwtService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
@@ -27,11 +27,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthControllerImpl implements AuthController {
 
   private final AuthenticationManager authenticationManager;
-  private final UserServiceImpl userService;
+  private final UserService userService;
   private final JwtService jwtService;
 
   @Override
-  public ResponseEntity<ApiResponse<JwtResponse>> login(LoginRequest request) {
+  public ResponseEntity<ApiResponse<JwtResponseDto>> login(LoginRequestDto request) {
 
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
@@ -46,7 +46,7 @@ public class AuthControllerImpl implements AuthController {
     String jwt = jwtService.generateToken(user);
     LocalDateTime expiresAt = jwtService.getExpirationDate(jwt);
 
-    JwtResponse response = new JwtResponse(
+    JwtResponseDto response = new JwtResponseDto(
         jwt,
         user.getUsername(),
         user.getEmail(),
@@ -58,16 +58,20 @@ public class AuthControllerImpl implements AuthController {
   }
 
   @Override
-  public ResponseEntity<ApiResponse<UserResponse>> register(RegisterRequest request) {
+  public ResponseEntity<ApiResponse<UserResponseDto>> register(RegisterRequestDto request) {
 
-    UserResponse userResponse = userService.registerUser(request);
+    UserResponseDto userResponseDto = userService.registerUser(request);
     return ResponseEntity.status(HttpStatus.CREATED)
-        .body(ApiResponse.success(userResponse, "User registered successfully"));
+        .body(ApiResponse.success(userResponseDto, "User registered successfully"));
   }
 
   @Override
-  public ResponseEntity<ApiResponse<UserResponse>> getProfile(Principal principal) {
-    UserResponse userResponse = userService.getUserProfile(principal.getName());
-    return ResponseEntity.ok(ApiResponse.success(userResponse));
+  public ResponseEntity<ApiResponse<UserResponseDto>> getProfile(Principal principal) {
+    if (principal == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(ApiResponse.error("Authentication required"));
+    }
+    UserResponseDto userResponseDto = userService.getUserProfile(principal.getName());
+    return ResponseEntity.ok(ApiResponse.success(userResponseDto));
   }
 }

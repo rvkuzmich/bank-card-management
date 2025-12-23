@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class JwtResponse {
+public class JwtResponseDto {
 
   private String token;
   private String type = "Bearer";
@@ -20,7 +20,7 @@ public class JwtResponse {
   private Role role;
   private LocalDateTime expiresAt;
 
-  public JwtResponse(String token, String username, String email, Role role,
+  public JwtResponseDto(String token, String username, String email, Role role,
       LocalDateTime expiresAt) {
     this.token = token;
     this.username = username;

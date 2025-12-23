@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TransferResponse {
+public class TransferResponseDto {
 
   private String id;
   private String fromCardId;

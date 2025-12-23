@@ -1,24 +1,30 @@
 package com.example.bankcards.service.impl;
 
-import com.example.bankcards.dto.request.CardFilterRequest;
-import com.example.bankcards.dto.request.CardRequest;
-import com.example.bankcards.dto.response.CardResponse;
+import com.example.bankcards.dto.request.CardFilterRequestDto;
+import com.example.bankcards.dto.request.CardRequestDto;
+import com.example.bankcards.dto.response.BlockRequestResponseDto;
+import com.example.bankcards.dto.response.CardResponseDto;
 import com.example.bankcards.entity.Card;
+import com.example.bankcards.entity.CardBlockRequest;
 import com.example.bankcards.entity.CardStatus;
+import com.example.bankcards.entity.RequestStatus;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.CardNotFoundException;
+import com.example.bankcards.repository.CardBlockRequestRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.EncryptionUtil;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,13 +34,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class CardServiceImpl implements CardService {
 
+  private final CardBlockRequestRepository blockRequestRepository;
   private final CardRepository cardRepository;
   private final UserRepository userRepository;
   private final EncryptionUtil encryptionUtil;
 
   @Override
   @Transactional
-  public CardResponse createCard(CardRequest request, String username) {
+  public CardResponseDto createCard(CardRequestDto request, String username) {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -58,7 +65,7 @@ public class CardServiceImpl implements CardService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<CardResponse> getUserCards(String username, CardFilterRequest filter,
+  public Page<CardResponseDto> getUserCards(String username, CardFilterRequestDto filter,
       Pageable pageable) {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -87,23 +94,102 @@ public class CardServiceImpl implements CardService {
 
   @Override
   @Transactional
-  public CardResponse blockCard(String cardId, String username) {
-    Card card = getCardByIdAndUser(cardId, username);
+  @PreAuthorize("hasRole('ADMIN')")
+  public CardResponseDto blockCard(String cardId, String adminUsername) {
+    Card card = cardRepository.findCardById(cardId)
+        .orElseThrow(() -> new CardNotFoundException("Card not found"));
 
     if (card.isExpired()) {
       throw new IllegalStateException("Cannot block expired card");
     }
 
     card.setStatus(CardStatus.BLOCKED);
+    card.setBlockedBy(adminUsername);
+    card.setBlockedAt(LocalDateTime.now());
     card = cardRepository.save(card);
+
+    log.info("Card {} blocked by admin {}", cardId, adminUsername);
 
     return mapToResponse(card);
   }
 
   @Override
   @Transactional
-  public CardResponse activateCard(String cardId, String username) {
+  public BlockRequestResponseDto requestCardBlock(String cardId, String username) {
     Card card = getCardByIdAndUser(cardId, username);
+
+    if (card.isExpired()) {
+      throw new IllegalStateException("Cannot block expired card");
+    }
+
+    if (card.getStatus() == CardStatus.BLOCKED) {
+      throw new IllegalStateException("Card is already blocked");
+    }
+
+    if (card.getStatus() == CardStatus.PENDING_BLOCK) {
+      throw new IllegalStateException("Block request already pending");
+    }
+
+    CardBlockRequest blockRequest = CardBlockRequest.builder()
+        .card(card)
+        .requestedBy(username)
+        .requestedAt(LocalDateTime.now())
+        .status(RequestStatus.PENDING)
+        .build();
+
+    blockRequestRepository.save(blockRequest);
+
+    card.setStatus(CardStatus.PENDING_BLOCK);
+    cardRepository.save(card);
+
+    log.info("Block request for card {} created by user {}", cardId, username);
+
+    return BlockRequestResponseDto.builder()
+        .cardId(cardId)
+        .cardStatus(card.getStatus())
+        .hasPendingRequest(true)
+        .requestedAt(LocalDateTime.now())
+        .requestedBy(username)
+        .message("Запрос на блокировку карты отправлен администратору")
+        .build();
+  }
+
+  @Override
+  @Transactional
+  @PreAuthorize("hasRole('ADMIN')")
+  public CardResponseDto approveBlockCard(String cardId, String adminUsername) {
+    Card card = cardRepository.findCardById(cardId)
+        .orElseThrow(() -> new CardNotFoundException("Card not found"));
+
+    if (card.getStatus() != CardStatus.PENDING_BLOCK) {
+      throw new IllegalStateException("No pending block request for this card");
+    }
+
+    CardBlockRequest blockRequest = blockRequestRepository
+        .findByCardIdAndStatus(cardId, RequestStatus.PENDING)
+        .orElseThrow(() -> new IllegalStateException("Block request not found"));
+
+    blockRequest.setApprovedBy(adminUsername);
+    blockRequest.setApprovedAt(LocalDateTime.now());
+    blockRequest.setStatus(RequestStatus.APPROVED);
+    blockRequestRepository.save(blockRequest);
+
+    card.setStatus(CardStatus.BLOCKED);
+    card.setBlockedBy(adminUsername);
+    card.setBlockedAt(LocalDateTime.now());
+    card = cardRepository.save(card);
+
+    log.info("Card {} block approved by admin {}", cardId, adminUsername);
+
+    return mapToResponse(card);
+  }
+
+  @Override
+  @Transactional
+  @PreAuthorize("hasRole('ADMIN')")
+  public CardResponseDto activateCard(String cardId, String adminUsername) {
+    Card card = cardRepository.findCardById(cardId)
+        .orElseThrow(() -> new CardNotFoundException("Card not found"));
 
     if (card.isExpired()) {
       throw new IllegalStateException("Cannot activate expired card");
@@ -111,6 +197,8 @@ public class CardServiceImpl implements CardService {
 
     card.setStatus(CardStatus.ACTIVE);
     card = cardRepository.save(card);
+
+    log.info("Card {} activated by admin {}", cardId, adminUsername);
 
     return mapToResponse(card);
   }
@@ -142,8 +230,8 @@ public class CardServiceImpl implements CardService {
     return cardNumber.toString();
   }
 
-  private CardResponse mapToResponse(Card card) {
-    return CardResponse.builder()
+  private CardResponseDto mapToResponse(Card card) {
+    return CardResponseDto.builder()
         .id(card.getId())
         .maskedNumber(card.getMaskedNumber())
         .cardholder(card.getCardholder())

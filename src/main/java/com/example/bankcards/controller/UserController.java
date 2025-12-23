@@ -1,7 +1,7 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.response.ApiResponse;
-import com.example.bankcards.dto.response.UserResponse;
+import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.entity.Role;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
@@ -20,12 +20,12 @@ public interface UserController {
 
   @GetMapping
   @Operation(summary = "Get all users", description = "Returns paginated list of all users")
-  ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUsers(
+  ResponseEntity<ApiResponse<Page<UserResponseDto>>> getAllUsers(
       @PageableDefault(size = 20) Pageable pageable);
 
   @PatchMapping("/{userId}/role")
   @Operation(summary = "Update user role", description = "Change user role (USER/ADMIN)")
-  ResponseEntity<ApiResponse<UserResponse>> updateUserRole(
+  ResponseEntity<ApiResponse<UserResponseDto>> updateUserRole(
       @PathVariable String userId,
       @RequestParam Role role);
 

@@ -1,6 +1,7 @@
 package com.example.bankcards.dto.request;
 
 import com.example.bankcards.entity.CardStatus;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.DecimalMin;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CardFilterRequest {
+public class CardFilterRequestDto {
 
   private CardStatus status;
 
@@ -28,4 +29,12 @@ public class CardFilterRequest {
   private LocalDate expiryTo;
 
   private String cardholderContains;
+
+  @AssertTrue(message = "Min balance must be less than or equal to max balance")
+  public boolean isBalanceRangeValid() {
+    if (minBalance == null || maxBalance == null) {
+      return true;
+    }
+    return minBalance.compareTo(maxBalance) <= 0;
+  }
 }

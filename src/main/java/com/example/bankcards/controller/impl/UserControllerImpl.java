@@ -2,9 +2,9 @@ package com.example.bankcards.controller.impl;
 
 import com.example.bankcards.controller.UserController;
 import com.example.bankcards.dto.response.ApiResponse;
-import com.example.bankcards.dto.response.UserResponse;
+import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.entity.Role;
-import com.example.bankcards.service.impl.UserServiceImpl;
+import com.example.bankcards.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,18 +19,18 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "User Management", description = "Admin user management operations")
 public class UserControllerImpl implements UserController {
 
-  private final UserServiceImpl userService;
+  private final UserService userService;
 
   @Override
-  public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUsers(Pageable pageable) {
-    Page<UserResponse> users = userService.getAllUsers(pageable);
+  public ResponseEntity<ApiResponse<Page<UserResponseDto>>> getAllUsers(Pageable pageable) {
+    Page<UserResponseDto> users = userService.getAllUsers(pageable);
     return ResponseEntity.ok(ApiResponse.success(users));
   }
 
   @Override
-  public ResponseEntity<ApiResponse<UserResponse>> updateUserRole(String userId, Role role) {
-    UserResponse userResponse = userService.updateUserRole(userId, role);
-    return ResponseEntity.ok(ApiResponse.success(userResponse, "User role updated"));
+  public ResponseEntity<ApiResponse<UserResponseDto>> updateUserRole(String userId, Role role) {
+    UserResponseDto userResponseDto = userService.updateUserRole(userId, role);
+    return ResponseEntity.ok(ApiResponse.success(userResponseDto, "User role updated"));
   }
 
   @Override

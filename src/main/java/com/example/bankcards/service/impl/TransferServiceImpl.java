@@ -1,7 +1,7 @@
 package com.example.bankcards.service.impl;
 
-import com.example.bankcards.dto.request.TransferRequest;
-import com.example.bankcards.dto.response.TransferResponse;
+import com.example.bankcards.dto.request.TransferRequestDto;
+import com.example.bankcards.dto.response.TransferResponseDto;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.Transfer;
 import com.example.bankcards.entity.User;
@@ -32,7 +32,7 @@ public class TransferServiceImpl implements TransferService {
   private final TransferRepository transferRepository;
 
   @Override
-  public TransferResponse transferBetweenOwnCards(TransferRequest request, String username) {
+  public TransferResponseDto transferBetweenOwnCards(TransferRequestDto request, String username) {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -63,7 +63,7 @@ public class TransferServiceImpl implements TransferService {
     log.info("Transfer completed from card {} to card {} amount {}",
         fromCard.getId(), toCard.getId(), request.getAmount());
 
-    return TransferResponse.builder()
+    return TransferResponseDto.builder()
         .id(transfer.getId())
         .fromCardId(fromCard.getId())
         .toCardId(toCard.getId())
@@ -75,7 +75,7 @@ public class TransferServiceImpl implements TransferService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<TransferResponse> getTransferHistory(String username, Pageable pageable) {
+  public Page<TransferResponseDto> getTransferHistory(String username, Pageable pageable) {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -86,7 +86,7 @@ public class TransferServiceImpl implements TransferService {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<TransferResponse> getCardTransferHistory(String cardId, String username,
+  public Page<TransferResponseDto> getCardTransferHistory(String cardId, String username,
       Pageable pageable) {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -125,8 +125,8 @@ public class TransferServiceImpl implements TransferService {
     }
   }
 
-  private TransferResponse mapToTransferResponse(Transfer transfer) {
-    return TransferResponse.builder()
+  private TransferResponseDto mapToTransferResponse(Transfer transfer) {
+    return TransferResponseDto.builder()
         .id(transfer.getId())
         .fromCardId(transfer.getFromCard().getId())
         .fromCardMaskedNumber(transfer.getFromCard().getMaskedNumber())

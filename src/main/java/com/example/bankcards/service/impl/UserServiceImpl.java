@@ -1,7 +1,7 @@
 package com.example.bankcards.service.impl;
 
-import com.example.bankcards.dto.request.RegisterRequest;
-import com.example.bankcards.dto.response.UserResponse;
+import com.example.bankcards.dto.request.RegisterRequestDto;
+import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.repository.UserRepository;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
 
   @Override
-  public UserResponse registerUser(RegisterRequest request) {
+  public UserResponseDto registerUser(RegisterRequestDto request) {
     validateUsernameAndEmail(request.getUsername(), request.getEmail());
 
     User user = User.builder()
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserResponse getUserProfile(String username) {
+  public UserResponseDto getUserProfile(String username) {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -53,13 +53,13 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Page<UserResponse> getAllUsers(Pageable pageable) {
+  public Page<UserResponseDto> getAllUsers(Pageable pageable) {
     return userRepository.findAll(pageable)
         .map(this::mapToResponse);
   }
 
   @Override
-  public UserResponse updateUserRole(String userId, Role role) {
+  public UserResponseDto updateUserRole(String userId, Role role) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -102,10 +102,10 @@ public class UserServiceImpl implements UserService {
     }
   }
 
-  private UserResponse mapToResponse(User user) {
+  private UserResponseDto mapToResponse(User user) {
     int cardCount = user.getCards() != null ? user.getCards().size() : 0;
 
-    return UserResponse.builder()
+    return UserResponseDto.builder()
         .id(user.getId())
         .username(user.getUsername())
         .email(user.getEmail())

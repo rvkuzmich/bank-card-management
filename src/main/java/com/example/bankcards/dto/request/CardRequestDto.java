@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CardRequest {
+public class CardRequestDto {
 
   @NotBlank(message = "Cardholder name is required")
   @Size(min = 2, max = 100, message = "Cardholder name must be between 2 and 100 characters")
