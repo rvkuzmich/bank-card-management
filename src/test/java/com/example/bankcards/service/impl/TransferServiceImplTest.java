@@ -46,6 +46,7 @@ import com.example.bankcards.entity.Transfer;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.CardNotFoundException;
 import com.example.bankcards.exception.InsufficientBalanceException;
+import com.example.bankcards.mapper.Mapper;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.TransferRepository;
 import com.example.bankcards.repository.UserRepository;
@@ -59,6 +60,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -66,6 +69,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class TransferServiceImplTest {
 
   @Mock
@@ -77,13 +81,20 @@ class TransferServiceImplTest {
   @Mock
   private TransferRepository transferRepository;
 
+  @Mock
+  private Mapper mapper;
+
   @InjectMocks
   private TransferServiceImpl transferService;
 
   private User testUser;
   private Card sourceCard;
   private Card destinationCard;
+  private Transfer transfer1;
+  private Transfer transfer2;
   private TransferRequestDto validRequest;
+  private TransferResponseDto dto1;
+  private TransferResponseDto dto2;
 
   @BeforeEach
   void setUp() {
@@ -112,11 +123,47 @@ class TransferServiceImplTest {
         .expiryDate(EXPIRY_DATE)
         .build();
 
-    validRequest = new TransferRequestDto();
-    validRequest.setFromCardId(SOURCE_CARD_ID);
-    validRequest.setToCardId(TARGET_CARD_ID);
-    validRequest.setAmount(TRANSFER_AMOUNT);
-    validRequest.setDescription(TRANSFER_DESCRIPTION);
+    validRequest = TransferRequestDto.builder()
+        .fromCardId(SOURCE_CARD_ID)
+        .toCardId(TARGET_CARD_ID)
+        .amount(TRANSFER_AMOUNT)
+        .description(TRANSFER_DESCRIPTION)
+        .build();
+
+    transfer1 = Transfer.builder()
+        .id(TRANSFER_ID)
+        .fromCard(sourceCard)
+        .toCard(destinationCard)
+        .amount(TRANSFER_AMOUNT)
+        .build();
+
+    transfer2 = Transfer.builder()
+        .id(TRANSFER_ID_2)
+        .fromCard(destinationCard)
+        .toCard(sourceCard)
+        .amount(TRANSFER_AMOUNT)
+        .build();
+
+    dto1 = TransferResponseDto.builder()
+        .id(TRANSFER_ID)
+        .fromCardId(sourceCard.getId())
+        .fromCardMaskedNumber(sourceCard.getMaskedNumber())
+        .toCardId(destinationCard.getId())
+        .toCardMaskedNumber(destinationCard.getMaskedNumber())
+        .amount(TRANSFER_AMOUNT)
+        .build();
+
+    dto2 = TransferResponseDto.builder()
+        .id(TRANSFER_ID_2)
+        .fromCardId(destinationCard.getId())
+        .fromCardMaskedNumber(destinationCard.getMaskedNumber())
+        .toCardId(sourceCard.getId())
+        .toCardMaskedNumber(sourceCard.getMaskedNumber())
+        .amount(TRANSFER_AMOUNT)
+        .build();
+
+    when(mapper.toTransferResponseDto(transfer1)).thenReturn(dto1);
+    when(mapper.toTransferResponseDto(transfer2)).thenReturn(dto2);
   }
 
   @Test
@@ -265,18 +312,7 @@ class TransferServiceImplTest {
   @Test
   void getTransferHistory_ShouldReturnUserTransfers() {
     Pageable pageable = PageRequest.of(PAGE_NUMBER, PAGE_SIZE);
-    Transfer transfer1 = Transfer.builder()
-        .id(TRANSFER_ID)
-        .fromCard(sourceCard)
-        .toCard(destinationCard)
-        .amount(TRANSFER_AMOUNT)
-        .build();
-    Transfer transfer2 = Transfer.builder()
-        .id(TRANSFER_ID_2)
-        .fromCard(destinationCard)
-        .toCard(sourceCard)
-        .amount(TRANSFER_AMOUNT)
-        .build();
+
     Page<Transfer> transfersPage = new PageImpl<>(Arrays.asList(transfer1, transfer2));
 
     when(userRepository.findByUsername(USERNAME_USER))

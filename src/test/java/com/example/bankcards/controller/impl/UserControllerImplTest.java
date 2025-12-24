@@ -2,8 +2,8 @@ package com.example.bankcards.controller.impl;
 
 import static com.example.bankcards.constants.TestConstants.INVALID_ROLE;
 import static com.example.bankcards.constants.TestConstants.INVALID_USER_ID;
-import static com.example.bankcards.constants.TestConstants.SUCCESSFUL_OPERATION_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.ADMIN_ROLE;
+import static com.example.bankcards.constants.TestConstants.USERS_RETRIEVED_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.USER_FIRSTNAME;
 import static com.example.bankcards.constants.TestConstants.USER_LASTNAME;
 import static com.example.bankcards.constants.TestConstants.PAGE_NUMBER;
@@ -17,6 +17,7 @@ import static com.example.bankcards.constants.TestConstants.USER_DISABLE_URI;
 import static com.example.bankcards.constants.TestConstants.USER_ENABLE_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.USER_ENABLE_URI;
 import static com.example.bankcards.constants.TestConstants.USER_NOT_FOUND_MESSAGE;
+import static com.example.bankcards.constants.TestConstants.USER_ROLE_UPDATED_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.USER_UPDATE_ROLE_URI;
 import static com.example.bankcards.constants.TestConstants.USER_URI;
 import static org.hamcrest.Matchers.hasSize;
@@ -107,7 +108,7 @@ class UserControllerImplTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success", is(true)))
-        .andExpect(jsonPath("$.message", is(SUCCESSFUL_OPERATION_MESSAGE)))
+        .andExpect(jsonPath("$.message", is(USERS_RETRIEVED_MESSAGE)))
         .andExpect(jsonPath("$.data.content", hasSize(1)))
         .andExpect(jsonPath("$.data.content[0].id", is(USER_ID)))
         .andExpect(jsonPath("$.data.content[0].username", is(USERNAME_USER)))
@@ -137,7 +138,7 @@ class UserControllerImplTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success", is(true)))
-        .andExpect(jsonPath("$.message", is("User role updated")))
+        .andExpect(jsonPath("$.message", is(USER_ROLE_UPDATED_MESSAGE)))
         .andExpect(jsonPath("$.data.id", is(USER_ID)))
         .andExpect(jsonPath("$.data.role", is(ADMIN_ROLE)));
 

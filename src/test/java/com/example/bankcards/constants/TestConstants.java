@@ -6,20 +6,20 @@ import java.util.UUID;
 
 public class TestConstants {
 
-  public static final String CARDS_URI = "/api/cards";
-  public static final String CARDS_ACTIVATE_URI = "/api/cards/{cardId}/activate";
-  public static final String CARDS_APPROVE_BLOCK_URI = "/api/cards/{cardId}/approve-block";
-  public static final String CARDS_BALANCE_URI = "/api/cards/{cardId}/balance";
-  public static final String CARDS_BLOCK_URI = "/api/cards/{cardId}/block";
-  public static final String LOGIN_URI = "/api/auth/login";
-  public static final String PROFILE_URI = "/api/auth/profile";
-  public static final String REGISTER_URI = "/api/auth/register";
-  public static final String TRANSFER_HISTORY_URI = "/api/transfers/history";
-  public static final String TRANSFER_URI = "/api/transfers";
-  public static final String USER_URI = "/api/users";
-  public static final String USER_DISABLE_URI = "/api/users/{userId}/disable";
-  public static final String USER_ENABLE_URI = "/api/users/{userId}/enable";
-  public static final String USER_UPDATE_ROLE_URI = "/api/users/{userId}/role";
+  public static final String CARDS_URI = "/api/v1/cards";
+  public static final String CARDS_ACTIVATE_URI = "/api/v1/cards/{cardId}/activate";
+  public static final String CARDS_APPROVE_BLOCK_URI = "/api/v1/cards/{cardId}/approve-block";
+  public static final String CARDS_BALANCE_URI = "/api/v1/cards/{cardId}/balance";
+  public static final String CARDS_BLOCK_URI = "/api/v1/cards/{cardId}/block";
+  public static final String LOGIN_URI = "/api/v1/auth/login";
+  public static final String PROFILE_URI = "/api/v1/auth/profile";
+  public static final String REGISTER_URI = "/api/v1/auth/register";
+  public static final String TRANSFER_HISTORY_URI = "/api/v1/transfers/history";
+  public static final String TRANSFER_URI = "/api/v1/transfers";
+  public static final String USER_URI = "/api/v1/users";
+  public static final String USER_DISABLE_URI = "/api/v1/users/{userId}/disable";
+  public static final String USER_ENABLE_URI = "/api/v1/users/{userId}/enable";
+  public static final String USER_UPDATE_ROLE_URI = "/api/v1/users/{userId}/role";
 
   public static final String ANOTHER_USER_ID = UUID.randomUUID().toString();
   public static final String ANOTHER_USERNAME = "another-user-name";
@@ -79,11 +79,11 @@ public class TestConstants {
   public static final String INVALID_JSON_FORMAT_MESSAGE = "Invalid request format. Please check your JSON syntax.";
   public static final String INVALID_TRANSFER_AMOUNT_MESSAGE = "Amount must be positive";
   public static final String PASSWORD_VALIDATION_MESSAGE = "Password must be between 6 and 100 characters";
+  public static final String PROFILE_RETRIEVED_MESSAGE = "Profile retrieved";
   public static final String SAME_CARD_TRANSFER_MESSAGE = "Cannot transfer to the same card";
   public static final String SOURCE_CARD_NOT_FOUND_MESSAGE = "Source card not found";
   public static final String SOURCE_CARD_NOT_ACTIVE_MESSAGE = "Source card is not active";
   public static final String SUCCESSFUL_LOGIN_MESSAGE = "Login successful";
-  public static final String SUCCESSFUL_OPERATION_MESSAGE = "Operation successful";
   public static final String SUCCESSFUL_TRANSFER_MESSAGE = "Transfer completed successfully";
   public static final String SUCCESSFUL_USER_REGISTRATION_MESSAGE = "User registered successfully";
   public static final String UNEXPECTED_ERROR_MESSAGE = "An unexpected error occurred";
@@ -91,6 +91,8 @@ public class TestConstants {
   public static final String USER_ENABLE_MESSAGE = "User enabled";
   public static final String USER_EXISTS_MESSAGE = "Username already exists";
   public static final String USER_NOT_FOUND_MESSAGE = "User not found";
+  public static final String USER_ROLE_UPDATED_MESSAGE = "User role updated";
+  public static final String USERS_RETRIEVED_MESSAGE = "Users retrieved successfully";
   public static final String USERNAME_VALIDATION_MESSAGE = "Username must be between 3 and 50 characters";
   public static final String VALIDATION_FAILED_MESSAGE = "Validation failed";
 
@@ -102,5 +104,4 @@ public class TestConstants {
   public static final BigDecimal TRANSFER_AMOUNT = new BigDecimal("100.00");
   public static final Integer PAGE_NUMBER = 0;
   public static final Integer PAGE_SIZE = 10;
-
 }

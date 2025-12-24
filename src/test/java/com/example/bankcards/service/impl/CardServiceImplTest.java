@@ -49,6 +49,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -57,6 +59,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class CardServiceImplTest {
 
   @Mock
@@ -108,6 +111,21 @@ class CardServiceImplTest {
         .cardholder(CARDHOLDER)
         .cardNumber(CARD_NUMBER)
         .build();
+
+    when(mapper.toCardResponseDto(any(Card.class)))
+        .thenAnswer(invocation -> {
+          Card card = invocation.getArgument(0);
+          return CardResponseDto.builder()
+              .id(card.getId())
+              .maskedNumber(card.getMaskedNumber())
+              .cardholder(card.getCardholder())
+              .expiryDate(card.getExpiryDate())
+              .status(card.getStatus())
+              .balance(card.getBalance())
+              .createdAt(card.getCreatedAt())
+              .updatedAt(card.getUpdatedAt() != null ? card.getUpdatedAt() : card.getCreatedAt())
+              .build();
+        });
   }
 
   @Test
@@ -132,18 +150,6 @@ class CardServiceImplTest {
           .updatedAt(LocalDateTime.now())
           .build();
     });
-
-    CardResponseDto expectedResponse = CardResponseDto.builder()
-        .id(CARD_ID)
-        .maskedNumber(MASKED_CARD_NUMBER)
-        .cardholder(CARDHOLDER)
-        .expiryDate(LocalDate.now().plusYears(3))
-        .status(CardStatus.ACTIVE)
-        .balance(BigDecimal.ZERO)
-        .createdAt(LocalDateTime.now())
-        .build();
-
-    when(mapper.toCardResponseDto(any(Card.class))).thenReturn(expectedResponse);
 
     CardResponseDto result = cardService.createCard(cardRequestDto, USERNAME_USER);
 
@@ -190,10 +196,12 @@ class CardServiceImplTest {
 
     assertNotNull(result);
     assertEquals(1, result.getTotalElements());
+    assertFalse(result.getContent().isEmpty());
     assertEquals(CARDHOLDER, result.getContent().get(0).getCardholder());
 
     verify(userRepository).findByUsername(USERNAME_USER);
     verify(cardRepository).findAll(any(Specification.class), eq(pageable));
+    verify(mapper).toCardResponseDto(testCard);
   }
 
   @Test

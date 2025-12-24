@@ -14,10 +14,10 @@ import static com.example.bankcards.constants.TestConstants.NEW_LASTNAME;
 import static com.example.bankcards.constants.TestConstants.NEW_USERNAME;
 import static com.example.bankcards.constants.TestConstants.NEW_EMAIL;
 import static com.example.bankcards.constants.TestConstants.PASSWORD_VALIDATION_MESSAGE;
+import static com.example.bankcards.constants.TestConstants.PROFILE_RETRIEVED_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.PROFILE_URI;
 import static com.example.bankcards.constants.TestConstants.REGISTER_URI;
 import static com.example.bankcards.constants.TestConstants.SUCCESSFUL_LOGIN_MESSAGE;
-import static com.example.bankcards.constants.TestConstants.SUCCESSFUL_OPERATION_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.SUCCESSFUL_USER_REGISTRATION_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.USER_FIRSTNAME;
 import static com.example.bankcards.constants.TestConstants.JWT_TOKEN;
@@ -330,7 +330,7 @@ class AuthControllerImplTest {
             .principal(principal))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.message").value(SUCCESSFUL_OPERATION_MESSAGE))
+        .andExpect(jsonPath("$.message").value(PROFILE_RETRIEVED_MESSAGE))
         .andExpect(jsonPath("$.data.id").value(testUser.getId()))
         .andExpect(jsonPath("$.data.username").value(USERNAME_USER))
         .andExpect(jsonPath("$.data.email").value(USER_EMAIL))
