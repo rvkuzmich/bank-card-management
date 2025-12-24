@@ -15,7 +15,6 @@ databaseChangeLog:
               - column:
                   name: id
                   type: UUID
-                  defaultValueComputed: gen_random_uuid()
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -23,7 +22,7 @@ databaseChangeLog:
 
               - column:
                   name: username
-                  type: VARCHAR(50)
+                  type: VARCHAR(100)
                   constraints:
                     unique: true
                     nullable: false
@@ -85,3 +84,17 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   remarks: Временная метка последнего обновления записи о пользователе
+
+        - createIndex:
+            tableName: users
+            indexName: idx_users_email
+            columns:
+              - column:
+                  name: email
+
+        - createIndex:
+            tableName: users
+            indexName: idx_users_username
+            columns:
+              - column:
+                  name: username

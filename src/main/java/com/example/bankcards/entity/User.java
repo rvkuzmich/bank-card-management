@@ -53,7 +53,7 @@ public class User implements UserDetails {
   private String lastName;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
   private Role role;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

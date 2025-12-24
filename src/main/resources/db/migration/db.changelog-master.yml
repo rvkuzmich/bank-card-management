@@ -6,6 +6,8 @@ databaseChangeLog:
   - include:
       file: db/migration/v1.0/create_table_transfer.yml
   - include:
+      file: db/migration/v1.0/create_table_card_block_requests.yml
+  - include:
       file: db/migration/v1.0/create_constraints.yml
   - include:
       file: db/migration/v1.0/create_index.yml

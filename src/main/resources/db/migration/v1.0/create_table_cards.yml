@@ -1,22 +1,22 @@
 databaseChangeLog:
   - changeSet:
-      id: create_table_card
+      id: create_table_cards
       author: Roman Kuzmich
       comment: Создание таблицы банковских карт
       preConditions:
         - not:
             - tableExists:
-                tableName: card
+                tableName: cards
         - tableExists:
             tableName: users
+
       changes:
         - createTable:
-            tableName: card
+            tableName: cards
             columns:
               - column:
                   name: id
                   type: UUID
-                  defaultValueComputed: gen_random_uuid()
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -32,7 +32,7 @@ databaseChangeLog:
 
               - column:
                   name: masked_number
-                  type: VARCHAR(19)
+                  type: VARCHAR(50)
                   constraints:
                     nullable: false
                   remarks: Маскированный номер карты
@@ -64,17 +64,24 @@ databaseChangeLog:
                   defaultValue: 0.00
                   constraints:
                     nullable: false
-                  remarks: баланс карты
+                  remarks: Баланс карты
 
               - column:
                   name: user_id
                   type: UUID
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_card_user
-                    referencedTableName: users
-                    referencedColumnNames: id
                   remarks: ID пользователя
+
+              - column:
+                  name: blocked_at
+                  type: TIMESTAMP
+                  remarks: Время блокировки карты
+
+              - column:
+                  name: blocked_by
+                  type: VARCHAR(100)
+                  remarks: Кто заблокировал карту
 
               - column:
                   name: created_at
@@ -92,16 +99,26 @@ databaseChangeLog:
                     nullable: false
                   remarks: Временная метка последнего обновления записи о карте
 
+        - addForeignKeyConstraint:
+            baseTableName: cards
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_card_user
+            validate: true
+
         - createIndex:
-            tableName: card
-            indexName: idx_card_user
+            tableName: cards
+            indexName: idx_cards_user
             columns:
               - column:
                   name: user_id
+            remarks: Индекс для быстрого поиска карт по пользователю
 
         - createIndex:
-            tableName: card
-            indexName: idx_card_status
+            tableName: cards
+            indexName: idx_cards_status
             columns:
               - column:
                   name: status
+            remarks: Индекс для фильтрации по статусу карты

@@ -6,18 +6,17 @@ databaseChangeLog:
       preConditions:
         - not:
             - tableExists:
-                tableName: transfer
+                tableName: transfers
         - tableExists:
-            tableName: card
+            tableName: cards
 
       changes:
         - createTable:
-            tableName: transfer
+            tableName: transfers
             columns:
               - column:
                   name: id
                   type: UUID
-                  defaultValueComputed: gen_random_uuid()
                   constraints:
                     primaryKey: true
                     nullable: false
@@ -28,8 +27,8 @@ databaseChangeLog:
                   type: UUID
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_transfer_from_card
-                    referencedTableName: card
+                    foreignKeyName: fk_transfers_from_card
+                    referencedTableName: cards
                     referencedColumnNames: id
                   remarks: ID карты, с которой осуществляется перевод
 
@@ -38,8 +37,8 @@ databaseChangeLog:
                   type: UUID
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_transfer_to_card
-                    referencedTableName: card
+                    foreignKeyName: fk_transfers_to_card
+                    referencedTableName: cards
                     referencedColumnNames: id
                   remarks: ID карты, на которую осуществляется перевод
 
@@ -64,22 +63,35 @@ databaseChangeLog:
                   remarks: Временная метка перевода
 
         - createIndex:
-            tableName: transfer
-            indexName: idx_transfer_from_card
+            tableName: transfers
+            indexName: idx_transfers_from_card
             columns:
               - column:
                   name: from_card_id
+            remarks: Индекс для быстрого поиска переводов по карте-источнику
 
         - createIndex:
-            tableName: transfer
-            indexName: idx_transfer_to_card
+            tableName: transfers
+            indexName: idx_transfers_to_card
             columns:
               - column:
                   name: to_card_id
+            remarks: Индекс для быстрого поиска переводов по карте-назначению
 
         - createIndex:
-            tableName: transfer
-            indexName: idx_transfer_timestamp
+            tableName: transfers
+            indexName: idx_transfers_timestamp
             columns:
               - column:
                   name: timestamp
+            remarks: Индекс для быстрого поиска переводов по временной метке
+
+        - createIndex:
+            tableName: transfers
+            indexName: idx_transfers_from_card_timestamp
+            columns:
+              - column:
+                  name: from_card_id
+              - column:
+                  name: timestamp
+            remarks: Индекс для поиска переводов по карте-источнику и временной метке

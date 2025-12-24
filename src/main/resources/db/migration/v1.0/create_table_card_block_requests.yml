@@ -1,0 +1,105 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_table_card_block_requests
+      author: Roman Kuzmich
+      comment: Создание таблицы запросов на блокировку карт
+      preConditions:
+        - not:
+            - tableExists:
+                tableName: card_block_requests
+        - tableExists:
+            tableName: cards
+
+      changes:
+        - createTable:
+            tableName: card_block_requests
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                  remarks: ID запроса на блокировку
+
+              - column:
+                  name: card_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_block_request_card
+                    referencedTableName: cards
+                    referencedColumnNames: id
+                  remarks: ID карты для блокировки
+
+              - column:
+                  name: requested_by
+                  type: VARCHAR(100)
+                  remarks: Кто запросил блокировку (username)
+
+              - column:
+                  name: requested_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  remarks: Время создания запроса
+
+              - column:
+                  name: approved_by
+                  type: VARCHAR(100)
+                  remarks: Кто одобрил/отклонил запрос
+
+              - column:
+                  name: approved_at
+                  type: TIMESTAMP
+                  remarks: Время обработки запроса
+
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: PENDING
+                  remarks: Статус запроса (PENDING, APPROVED, REJECTED, CANCELLED)
+
+        - addForeignKeyConstraint:
+            baseTableName: card_block_requests
+            baseColumnNames: card_id
+            referencedTableName: cards
+            referencedColumnNames: id
+            constraintName: fk_block_request_card
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            validate: true
+            deferrable: false
+
+        - createIndex:
+            tableName: card_block_requests
+            indexName: idx_block_requests_card_id
+            columns:
+              - column:
+                  name: card_id
+            remarks: Индекс для быстрого поиска запросов по карте
+
+        - createIndex:
+            tableName: card_block_requests
+            indexName: idx_block_requests_status
+            columns:
+              - column:
+                  name: status
+            remarks: Индекс для фильтрации по статусу запроса
+
+        - createIndex:
+            tableName: card_block_requests
+            indexName: idx_block_requests_requested_at
+            columns:
+              - column:
+                  name: requested_at
+            remarks: Индекс для сортировки запросов по дате создания
+
+        - createIndex:
+            tableName: card_block_requests
+            indexName: idx_block_requests_card_status
+            columns:
+              - column:
+                  name: card_id
+              - column:
+                  name: status
+            remarks: Индекс для поиска запросов по карте и статусу
