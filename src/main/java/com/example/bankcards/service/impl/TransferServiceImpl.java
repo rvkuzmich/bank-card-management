@@ -31,6 +31,7 @@ public class TransferServiceImpl implements TransferService {
   private final CardRepository cardRepository;
   private final UserRepository userRepository;
   private final TransferRepository transferRepository;
+  private final Mapper mapper;
 
   @Override
   public TransferResponseDto transferBetweenOwnCards(TransferRequestDto request, String username) {
@@ -82,7 +83,7 @@ public class TransferServiceImpl implements TransferService {
 
     Page<Transfer> transfers = transferRepository.findByUserId(user.getId(), pageable);
 
-    return transfers.map(Mapper::toTransferResponseStatic);
+    return transfers.map(mapper::toTransferResponseDto);
   }
 
   @Override
@@ -101,7 +102,7 @@ public class TransferServiceImpl implements TransferService {
 
     Page<Transfer> transfers = transferRepository.findByCardId(cardId, pageable);
 
-    return transfers.map(Mapper::toTransferResponseStatic);
+    return transfers.map(mapper::toTransferResponseDto);
   }
 
   private void validateTransfer(Card fromCard, Card toCard, BigDecimal amount) {

@@ -112,7 +112,7 @@ public class CardServiceImpl implements CardService {
 
     Page<Card> cards = cardRepository.findAll(spec, pageable);
 
-    return cards.map(Mapper::toCardResponseDtoStatic);
+    return cards.map(mapper::toCardResponseDto);
   }
 
   @Override

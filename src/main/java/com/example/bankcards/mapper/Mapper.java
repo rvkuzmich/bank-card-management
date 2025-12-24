@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Mapper {
 
-  public static CardResponseDto toCardResponseDtoStatic(Card card) {
+  public CardResponseDto toCardResponseDto(Card card) {
     return CardResponseDto.builder()
         .id(card.getId())
         .maskedNumber(card.getMaskedNumber())
@@ -24,11 +24,7 @@ public class Mapper {
         .build();
   }
 
-  public CardResponseDto toCardResponseDto(Card card) {
-    return toCardResponseDtoStatic(card);
-  }
-
-  public static TransferResponseDto toTransferResponseStatic(Transfer transfer) {
+  public TransferResponseDto toTransferResponseDto(Transfer transfer) {
     return TransferResponseDto.builder()
         .id(transfer.getId())
         .fromCardId(transfer.getFromCard().getId())
@@ -41,13 +37,8 @@ public class Mapper {
         .build();
   }
 
-  public TransferResponseDto toTransferResponseDto(Transfer transfer) {
-    return toTransferResponseStatic(transfer);
-  }
-
-  public static UserResponseDto toUserResponseStatic(User user) {
+  public UserResponseDto toUserResponseDto(User user) {
     int cardCount = user.getCards() != null ? user.getCards().size() : 0;
-
     return UserResponseDto.builder()
         .id(user.getId())
         .username(user.getUsername())
@@ -59,9 +50,5 @@ public class Mapper {
         .createdAt(user.getCreatedAt())
         .cardCount(cardCount)
         .build();
-  }
-
-  public UserResponseDto toUserResponseDto(User user) {
-    return toUserResponseStatic(user);
   }
 }
