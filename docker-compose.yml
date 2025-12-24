@@ -5,17 +5,17 @@ services:
     image: postgres:15-alpine
     container_name: bank-rest-postgres
     environment:
-      POSTGRES_DB: carddb
+      POSTGRES_DB: db_card
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: ${DB_PASSWORD:-admin123}
       POSTGRES_INITDB_ARGS: "--encoding=UTF8"
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data:z
+      - ./init-scripts:/docker-entrypoint-initdb.d:z
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d bankcarddb"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d db_card"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -32,15 +32,15 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bankcarddb
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_card
       SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-admin123}
 
-      JWT_SECRET: ${JWT_SECRET:}
+      JWT_SECRET: ${JWT_SECRET:-default_jwt_secret_12345}
       JWT_EXPIRATION: 86400000
 
-      ENCRYPTION_SECRET_KEY: ${ENCRYPTION_SECRET_KEY:}
-      ENCRYPTION_SALT: ${ENCRYPTION_SALT:}
+      ENCRYPTION_SECRET_KEY: ${ENCRYPTION_SECRET_KEY:-default_encryption_key_12345678}
+      ENCRYPTION_SALT: ${ENCRYPTION_SALT:-default_salt_1234}
 
       SPRING_PROFILES_ACTIVE: docker
       SERVER_PORT: 8080
@@ -54,8 +54,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./logs:/app/logs
-      - ./config:/app/config:ro
+      - ./logs:/app/logs:z
+      - ./config:/app/config:ro,z
     networks:
       - bank-rest-network
     restart: unless-stopped
@@ -71,12 +71,12 @@ services:
     container_name: bank-rest-pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@bankcard.com
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
       - "5050:80"
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - pgadmin_data:/var/lib/pgadmin:z
     networks:
       - bank-rest-network
     restart: unless-stopped
