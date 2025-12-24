@@ -1,7 +1,7 @@
 package com.example.bankcards.exception;
 
-import com.example.bankcards.dto.response.ApiResponse;
-import com.example.bankcards.dto.response.ErrorResponse;
+import com.example.bankcards.dto.response.ApiResponseDto;
+import com.example.bankcards.dto.response.ErrorResponseDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @Slf4j
 public class GlobalExceptionHandler {
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ApiResponse<Void>> handleValidationExceptions(
+  public ResponseEntity<ApiResponseDto<Void>> handleValidationExceptions(
       MethodArgumentNotValidException ex) {
     List<String> errors = ex.getBindingResult()
         .getFieldErrors()
@@ -36,58 +36,58 @@ public class GlobalExceptionHandler {
     log.warn("Validation error: {}", errorMessage);
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(ApiResponse.error("Validation failed: " + errorMessage));
+        .body(ApiResponseDto.error("Validation failed: " + errorMessage));
   }
 
   @ExceptionHandler(UsernameNotFoundException.class)
-  public ResponseEntity<ApiResponse<Void>> handleUsernameNotFoundException(
+  public ResponseEntity<ApiResponseDto<Void>> handleUsernameNotFoundException(
       UsernameNotFoundException ex) {
     log.warn("User not found: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(ApiResponse.error("User not found"));
+        .body(ApiResponseDto.error("User not found"));
   }
 
   @ExceptionHandler(CardNotFoundException.class)
-  public ResponseEntity<ApiResponse<Void>> handleCardNotFoundException(
+  public ResponseEntity<ApiResponseDto<Void>> handleCardNotFoundException(
       CardNotFoundException ex) {
     log.warn("Card not found: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body(ApiResponse.error("Card not found"));
+        .body(ApiResponseDto.error("Card not found"));
   }
 
   @ExceptionHandler(InsufficientBalanceException.class)
-  public ResponseEntity<ApiResponse<Void>> handleInsufficientBalanceException(
+  public ResponseEntity<ApiResponseDto<Void>> handleInsufficientBalanceException(
       InsufficientBalanceException ex) {
     log.warn("Insufficient balance: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(ApiResponse.error("Insufficient balance"));
+        .body(ApiResponseDto.error("Insufficient balance"));
   }
 
   @ExceptionHandler(AuthenticationException.class)
-  public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(
+  public ResponseEntity<ApiResponseDto<Void>> handleAuthenticationException(
       AuthenticationException ex) {
     log.warn("Authentication failed: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-        .body(ApiResponse.error("Authentication failed"));
+        .body(ApiResponseDto.error("Authentication failed"));
   }
 
   @ExceptionHandler(AccessDeniedException.class)
-  public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(
+  public ResponseEntity<ApiResponseDto<Void>> handleAccessDeniedException(
       AccessDeniedException ex) {
     log.warn("Access denied: {}", ex.getMessage());
     return ResponseEntity.status(HttpStatus.FORBIDDEN)
-        .body(ApiResponse.error("Access denied"));
+        .body(ApiResponseDto.error("Access denied"));
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
+  public ResponseEntity<ApiResponseDto<Void>> handleGenericException(Exception ex) {
     log.error("Unexpected error occurred: ", ex);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(ApiResponse.error("An unexpected error occurred"));
+        .body(ApiResponseDto.error("An unexpected error occurred"));
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(
+  public ResponseEntity<ApiResponseDto<Void>> handleHttpMessageNotReadableException(
       HttpMessageNotReadableException ex) {
     log.warn("Malformed JSON request: {}", ex.getMessage());
 
@@ -97,11 +97,11 @@ public class GlobalExceptionHandler {
     }
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(ApiResponse.error(errorMessage));
+        .body(ApiResponseDto.error(errorMessage));
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
-  public ResponseEntity<ErrorResponse> handleConstraintViolationException(
+  public ResponseEntity<ErrorResponseDto> handleConstraintViolationException(
       ConstraintViolationException ex) {
 
     List<String> errors = ex.getConstraintViolations().stream()
@@ -109,7 +109,7 @@ public class GlobalExceptionHandler {
         .collect(Collectors.toList());
 
     return ResponseEntity.badRequest()
-        .body(ErrorResponse.builder()
+        .body(ErrorResponseDto.builder()
             .success(false)
             .message("Validation failed")
             .errors(errors)
@@ -117,7 +117,7 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-  public ResponseEntity<ApiResponse<Void>> handleMethodArgumentTypeMismatchException(
+  public ResponseEntity<ApiResponseDto<Void>> handleMethodArgumentTypeMismatchException(
       MethodArgumentTypeMismatchException ex) {
 
     log.warn("Method argument type mismatch: {}", ex.getMessage());
@@ -141,11 +141,11 @@ public class GlobalExceptionHandler {
     }
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(ApiResponse.error(errorMessage));
+        .body(ApiResponseDto.error(errorMessage));
   }
 
   @ExceptionHandler(MissingServletRequestParameterException.class)
-  public ResponseEntity<ApiResponse<Void>> handleMissingServletRequestParameterException(
+  public ResponseEntity<ApiResponseDto<Void>> handleMissingServletRequestParameterException(
       MissingServletRequestParameterException ex) {
 
     log.warn("Missing request parameter: {}", ex.getMessage());
@@ -154,6 +154,6 @@ public class GlobalExceptionHandler {
         ex.getParameterName());
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body(ApiResponse.error(errorMessage));
+        .body(ApiResponseDto.error(errorMessage));
   }
 }

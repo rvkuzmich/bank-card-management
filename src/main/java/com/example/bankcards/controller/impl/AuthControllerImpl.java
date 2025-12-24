@@ -3,27 +3,33 @@ package com.example.bankcards.controller.impl;
 import com.example.bankcards.controller.AuthController;
 import com.example.bankcards.dto.request.LoginRequestDto;
 import com.example.bankcards.dto.request.RegisterRequestDto;
-import com.example.bankcards.dto.response.ApiResponse;
+import com.example.bankcards.dto.response.ApiResponseDto;
 import com.example.bankcards.dto.response.JwtResponseDto;
 import com.example.bankcards.dto.response.UserResponseDto;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.service.UserService;
 import com.example.bankcards.security.JwtService;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = "Authentication and registration endpoints")
+@RequestMapping("/api/v1/auth")
 public class AuthControllerImpl implements AuthController {
 
   private final AuthenticationManager authenticationManager;
@@ -31,7 +37,9 @@ public class AuthControllerImpl implements AuthController {
   private final JwtService jwtService;
 
   @Override
-  public ResponseEntity<ApiResponse<JwtResponseDto>> login(LoginRequestDto request) {
+  @PostMapping("/login")
+  public ResponseEntity<ApiResponseDto<JwtResponseDto>> login(
+      @Valid @RequestBody LoginRequestDto request) {
 
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
@@ -54,24 +62,29 @@ public class AuthControllerImpl implements AuthController {
         expiresAt
     );
 
-    return ResponseEntity.ok(ApiResponse.success(response, "Login successful"));
+    return ResponseEntity.ok(ApiResponseDto.success(response, "Login successful"));
   }
 
   @Override
-  public ResponseEntity<ApiResponse<UserResponseDto>> register(RegisterRequestDto request) {
+  @PostMapping("/register")
+  @ResponseStatus(HttpStatus.CREATED)
+  public ResponseEntity<ApiResponseDto<UserResponseDto>> register(
+      @Valid @RequestBody RegisterRequestDto request) {
 
     UserResponseDto userResponseDto = userService.registerUser(request);
     return ResponseEntity.status(HttpStatus.CREATED)
-        .body(ApiResponse.success(userResponseDto, "User registered successfully"));
+        .body(ApiResponseDto.success(userResponseDto, "User registered successfully"));
   }
 
   @Override
-  public ResponseEntity<ApiResponse<UserResponseDto>> getProfile(Principal principal) {
+  @GetMapping("/profile")
+  @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+  public ResponseEntity<ApiResponseDto<UserResponseDto>> getProfile(Principal principal) {
     if (principal == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(ApiResponse.error("Authentication required"));
+          .body(ApiResponseDto.error("Authentication required"));
     }
     UserResponseDto userResponseDto = userService.getUserProfile(principal.getName());
-    return ResponseEntity.ok(ApiResponse.success(userResponseDto));
+    return ResponseEntity.ok(ApiResponseDto.success(userResponseDto, "Profile retrieved"));
   }
 }
