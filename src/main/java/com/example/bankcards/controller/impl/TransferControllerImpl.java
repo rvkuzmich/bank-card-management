@@ -5,7 +5,6 @@ import com.example.bankcards.dto.request.TransferRequestDto;
 import com.example.bankcards.dto.response.ApiResponseDto;
 import com.example.bankcards.dto.response.TransferResponseDto;
 import com.example.bankcards.service.TransferService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;

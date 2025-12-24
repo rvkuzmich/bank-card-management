@@ -23,6 +23,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ApiResponseDto<Void>> handleValidationExceptions(
       MethodArgumentNotValidException ex) {

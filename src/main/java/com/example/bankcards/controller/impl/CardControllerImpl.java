@@ -7,7 +7,6 @@ import com.example.bankcards.dto.response.ApiResponseDto;
 import com.example.bankcards.dto.response.BlockRequestResponseDto;
 import com.example.bankcards.dto.response.CardResponseDto;
 import com.example.bankcards.service.CardService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.security.Principal;
