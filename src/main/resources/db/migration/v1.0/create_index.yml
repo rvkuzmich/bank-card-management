@@ -7,9 +7,9 @@ databaseChangeLog:
             - tableExists:
                 tableName: users
             - tableExists:
-                tableName: card
+                tableName: cards
             - tableExists:
-                tableName: transfer
+                tableName: transfers
             - and:
                 - not:
                     indexExists:
@@ -30,14 +30,14 @@ databaseChangeLog:
                   name: email
 
         - createIndex:
-            tableName: card
+            tableName: cards
             indexName: idx_card_expiry
             columns:
               - column:
                   name: expiry_date
 
         - createIndex:
-            tableName: transfer
+            tableName: transfers
             indexName: idx_transfer_amount
             columns:
               - column:

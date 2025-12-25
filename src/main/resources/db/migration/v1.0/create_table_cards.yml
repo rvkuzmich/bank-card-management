@@ -20,7 +20,7 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-                  remarks: ID карты
+                  remarks: Card ID
 
               - column:
                   name: card_number
@@ -28,35 +28,35 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
-                  remarks: Номер карты
+                  remarks: Card number
 
               - column:
                   name: masked_number
                   type: VARCHAR(50)
                   constraints:
                     nullable: false
-                  remarks: Маскированный номер карты
+                  remarks: Masked card number
 
               - column:
                   name: cardholder
                   type: VARCHAR(100)
                   constraints:
                     nullable: false
-                  remarks: Держатель карты
+                  remarks: Cardholder
 
               - column:
                   name: expiry_date
                   type: DATE
                   constraints:
                     nullable: false
-                  remarks: Срок действия карты
+                  remarks: Card expiry date
 
               - column:
                   name: status
                   type: VARCHAR(20)
                   constraints:
                     nullable: false
-                  remarks: Статус карты
+                  remarks: Card status
 
               - column:
                   name: balance
@@ -64,24 +64,24 @@ databaseChangeLog:
                   defaultValue: 0.00
                   constraints:
                     nullable: false
-                  remarks: Баланс карты
+                  remarks: Card balance
 
               - column:
                   name: user_id
                   type: UUID
                   constraints:
                     nullable: false
-                  remarks: ID пользователя
+                  remarks: User ID
 
               - column:
                   name: blocked_at
                   type: TIMESTAMP
-                  remarks: Время блокировки карты
+                  remarks: Card block timestamp
 
               - column:
                   name: blocked_by
                   type: VARCHAR(100)
-                  remarks: Кто заблокировал карту
+                  remarks: Card blocker username
 
               - column:
                   name: created_at
@@ -89,7 +89,7 @@ databaseChangeLog:
                   defaultValueComputed: CURRENT_TIMESTAMP
                   constraints:
                     nullable: false
-                  remarks: Временная метка создания записи о карте
+                  remarks: Card creation timestamp
 
               - column:
                   name: updated_at
@@ -97,7 +97,7 @@ databaseChangeLog:
                   defaultValueComputed: CURRENT_TIMESTAMP
                   constraints:
                     nullable: false
-                  remarks: Временная метка последнего обновления записи о карте
+                  remarks: Card last update timestamp
 
         - addForeignKeyConstraint:
             baseTableName: cards
@@ -113,7 +113,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: user_id
-            remarks: Индекс для быстрого поиска карт по пользователю
+            remarks: Index for card search by user
 
         - createIndex:
             tableName: cards
@@ -121,4 +121,4 @@ databaseChangeLog:
             columns:
               - column:
                   name: status
-            remarks: Индекс для фильтрации по статусу карты
+            remarks: Index for card filtration by status

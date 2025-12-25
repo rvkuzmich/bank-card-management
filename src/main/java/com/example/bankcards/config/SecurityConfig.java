@@ -2,9 +2,9 @@ package com.example.bankcards.config;
 
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.security.JwtAuthenticationFilter;
+import com.example.bankcards.security.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -26,14 +26,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-  private final JwtAuthenticationFilter jwtAuthFilter;
   private final UserRepository userRepository;
+  private final JwtService jwtService;
 
-  public SecurityConfig(
-      @Lazy JwtAuthenticationFilter jwtAuthFilter,
-      UserRepository userRepository) {
-    this.jwtAuthFilter = jwtAuthFilter;
+  // Инжектируем JwtService, а не JwtAuthenticationFilter
+  public SecurityConfig(UserRepository userRepository, JwtService jwtService) {
     this.userRepository = userRepository;
+    this.jwtService = jwtService;
   }
 
   @Bean
@@ -57,14 +56,20 @@ public class SecurityConfig {
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         )
         .authenticationProvider(authenticationProvider())
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
 
   @Bean
+  public JwtAuthenticationFilter jwtAuthenticationFilter() {
+    return new JwtAuthenticationFilter(jwtService, userDetailsService());
+  }
+
+  @Bean
   public AuthenticationProvider authenticationProvider() {
-    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+    authProvider.setUserDetailsService(userDetailsService());
     authProvider.setPasswordEncoder(passwordEncoder());
     return authProvider;
   }

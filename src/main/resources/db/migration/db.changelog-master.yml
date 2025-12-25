@@ -4,7 +4,7 @@ databaseChangeLog:
   - include:
       file: db/migration/v1.0/create_table_cards.yml
   - include:
-      file: db/migration/v1.0/create_table_transfer.yml
+      file: db/migration/v1.0/create_table_transfers.yml
   - include:
       file: db/migration/v1.0/create_table_card_block_requests.yml
   - include:

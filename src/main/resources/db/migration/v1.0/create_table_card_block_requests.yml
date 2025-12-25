@@ -2,14 +2,13 @@ databaseChangeLog:
   - changeSet:
       id: create_table_card_block_requests
       author: Roman Kuzmich
-      comment: Создание таблицы запросов на блокировку карт
+      comment: Create table for card block requests
       preConditions:
         - not:
             - tableExists:
                 tableName: card_block_requests
         - tableExists:
             tableName: cards
-
       changes:
         - createTable:
             tableName: card_block_requests
@@ -20,44 +19,47 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-                  remarks: ID запроса на блокировку
+                  remarks: Card block request ID
 
               - column:
                   name: card_id
                   type: UUID
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_block_request_card
-                    referencedTableName: cards
-                    referencedColumnNames: id
-                  remarks: ID карты для блокировки
+                  remarks: Blocking card ID
 
               - column:
                   name: requested_by
                   type: VARCHAR(100)
-                  remarks: Кто запросил блокировку (username)
+                  constraints:
+                    nullable: false
+                  remarks: Requester username
 
               - column:
                   name: requested_at
                   type: TIMESTAMP
                   defaultValueComputed: CURRENT_TIMESTAMP
-                  remarks: Время создания запроса
+                  constraints:
+                    nullable: false
+                  remarks: Block request creation timestamp
 
               - column:
                   name: approved_by
                   type: VARCHAR(100)
-                  remarks: Кто одобрил/отклонил запрос
+                  remarks: Approver username
 
               - column:
                   name: approved_at
                   type: TIMESTAMP
-                  remarks: Время обработки запроса
+                  remarks: Block request approve timestamp
 
               - column:
                   name: status
                   type: VARCHAR(20)
-                  defaultValue: PENDING
-                  remarks: Статус запроса (PENDING, APPROVED, REJECTED, CANCELLED)
+                  defaultValue: 'PENDING'
+                  constraints:
+                    nullable: false
+                  remarks: Block request status (PENDING, APPROVED, REJECTED, CANCELLED)
 
         - addForeignKeyConstraint:
             baseTableName: card_block_requests
@@ -65,34 +67,8 @@ databaseChangeLog:
             referencedTableName: cards
             referencedColumnNames: id
             constraintName: fk_block_request_card
-            onDelete: NO ACTION
-            onUpdate: NO ACTION
-            validate: true
             deferrable: false
-
-        - createIndex:
-            tableName: card_block_requests
-            indexName: idx_block_requests_card_id
-            columns:
-              - column:
-                  name: card_id
-            remarks: Индекс для быстрого поиска запросов по карте
-
-        - createIndex:
-            tableName: card_block_requests
-            indexName: idx_block_requests_status
-            columns:
-              - column:
-                  name: status
-            remarks: Индекс для фильтрации по статусу запроса
-
-        - createIndex:
-            tableName: card_block_requests
-            indexName: idx_block_requests_requested_at
-            columns:
-              - column:
-                  name: requested_at
-            remarks: Индекс для сортировки запросов по дате создания
+            initiallyDeferred: false
 
         - createIndex:
             tableName: card_block_requests
@@ -102,4 +78,12 @@ databaseChangeLog:
                   name: card_id
               - column:
                   name: status
-            remarks: Индекс для поиска запросов по карте и статусу
+            remarks: Index for requests search by card and satus
+
+        - createIndex:
+            tableName: card_block_requests
+            indexName: idx_block_requests_requested_at
+            columns:
+              - column:
+                  name: requested_at
+            remarks: Index for request sort by creation date

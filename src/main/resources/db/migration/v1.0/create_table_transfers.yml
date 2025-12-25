@@ -20,7 +20,7 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
-                  remarks: ID перевода
+                  remarks: Transfer ID
 
               - column:
                   name: from_card_id
@@ -30,7 +30,7 @@ databaseChangeLog:
                     foreignKeyName: fk_transfers_from_card
                     referencedTableName: cards
                     referencedColumnNames: id
-                  remarks: ID карты, с которой осуществляется перевод
+                  remarks: Source card ID
 
               - column:
                   name: to_card_id
@@ -40,19 +40,19 @@ databaseChangeLog:
                     foreignKeyName: fk_transfers_to_card
                     referencedTableName: cards
                     referencedColumnNames: id
-                  remarks: ID карты, на которую осуществляется перевод
+                  remarks: Destination card ID
 
               - column:
                   name: amount
                   type: DECIMAL(15,2)
                   constraints:
                     nullable: false
-                  remarks: Сумма перевода
+                  remarks: Transfer amount
 
               - column:
                   name: description
                   type: VARCHAR(255)
-                  remarks: Описание перевода
+                  remarks: Transfer description
 
               - column:
                   name: timestamp
@@ -60,7 +60,7 @@ databaseChangeLog:
                   defaultValueComputed: CURRENT_TIMESTAMP
                   constraints:
                     nullable: false
-                  remarks: Временная метка перевода
+                  remarks: Transfer timestamp
 
         - createIndex:
             tableName: transfers
@@ -68,7 +68,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: from_card_id
-            remarks: Индекс для быстрого поиска переводов по карте-источнику
+            remarks: Index for transfer search by source card
 
         - createIndex:
             tableName: transfers
@@ -76,7 +76,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: to_card_id
-            remarks: Индекс для быстрого поиска переводов по карте-назначению
+            remarks: Index for transfer search by destination card
 
         - createIndex:
             tableName: transfers
@@ -84,7 +84,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: timestamp
-            remarks: Индекс для быстрого поиска переводов по временной метке
+            remarks: Index for transfer search by timestamp
 
         - createIndex:
             tableName: transfers
@@ -94,4 +94,4 @@ databaseChangeLog:
                   name: from_card_id
               - column:
                   name: timestamp
-            remarks: Индекс для поиска переводов по карте-источнику и временной метке
+            remarks: Index for transfer search by source card and timestamp
