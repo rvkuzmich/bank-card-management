@@ -3,6 +3,7 @@ package com.example.bankcards.dto.response;
 import com.example.bankcards.entity.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class UserResponseDto {
       description = "Unique user ID",
       example = "550e8400-e29b-41d4-a716-446655440000"
   )
-  private String id;
+  private UUID id;
 
   @Schema(
       description = "User login",

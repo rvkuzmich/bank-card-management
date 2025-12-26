@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +27,7 @@ public class CardBlockRequest {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private String id;
+  private UUID id;
 
   @ManyToOne
   @JoinColumn(name = "card_id")

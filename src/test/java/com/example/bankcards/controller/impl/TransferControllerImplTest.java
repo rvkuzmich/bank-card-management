@@ -87,7 +87,7 @@ class TransferControllerImplTest {
             .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data.id").value(TRANSFER_ID))
+        .andExpect(jsonPath("$.data.id").value(TRANSFER_ID.toString()))
         .andExpect(jsonPath("$.data.amount").isNumber())
         .andExpect(jsonPath("$.data.amount").value(1500.5))
         .andExpect(jsonPath("$.message").value(SUCCESSFUL_TRANSFER_MESSAGE));
@@ -249,8 +249,8 @@ class TransferControllerImplTest {
 
   private TransferRequestDto createValidTransferRequest() {
     TransferRequestDto request = new TransferRequestDto();
-    request.setFromCardId(SOURCE_CARD_ID);
-    request.setToCardId(TARGET_CARD_ID);
+    request.setFromCardId(SOURCE_CARD_ID.toString());
+    request.setToCardId(TARGET_CARD_ID.toString());
     request.setAmount(BALANCE);
     request.setDescription(TRANSFER_DESCRIPTION);
     return request;

@@ -44,7 +44,6 @@ services:
 
       SPRING_PROFILES_ACTIVE: docker
       SERVER_PORT: 8080
-      SERVER_SERVLET_CONTEXT_PATH: /api
 
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,metrics
       MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
@@ -60,7 +59,7 @@ services:
       - bank-rest-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/actuator/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3

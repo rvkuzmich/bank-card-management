@@ -110,7 +110,7 @@ class UserControllerImplTest {
         .andExpect(jsonPath("$.success", is(true)))
         .andExpect(jsonPath("$.message", is(USERS_RETRIEVED_MESSAGE)))
         .andExpect(jsonPath("$.data.content", hasSize(1)))
-        .andExpect(jsonPath("$.data.content[0].id", is(USER_ID)))
+        .andExpect(jsonPath("$.data.content[0].id", is(USER_ID.toString())))
         .andExpect(jsonPath("$.data.content[0].username", is(USERNAME_USER)))
         .andExpect(jsonPath("$.data.content[0].email", is(USER_EMAIL)))
         .andExpect(jsonPath("$.data.content[0].role", is(USER_ROLE)))
@@ -130,7 +130,7 @@ class UserControllerImplTest {
         .enabled(true)
         .build();
 
-    when(userService.updateUserRole(eq(USER_ID), eq(Role.ADMIN)))
+    when(userService.updateUserRole(eq(USER_ID.toString()), eq(Role.ADMIN)))
         .thenReturn(updatedUser);
 
     mockMvc.perform(patch(USER_UPDATE_ROLE_URI, USER_ID)
@@ -139,10 +139,10 @@ class UserControllerImplTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success", is(true)))
         .andExpect(jsonPath("$.message", is(USER_ROLE_UPDATED_MESSAGE)))
-        .andExpect(jsonPath("$.data.id", is(USER_ID)))
+        .andExpect(jsonPath("$.data.id", is(USER_ID.toString())))
         .andExpect(jsonPath("$.data.role", is(ADMIN_ROLE)));
 
-    verify(userService, times(1)).updateUserRole(USER_ID, Role.ADMIN);
+    verify(userService, times(1)).updateUserRole(USER_ID.toString(), Role.ADMIN);
   }
 
   @Test
@@ -157,7 +157,7 @@ class UserControllerImplTest {
   @Test
   @WithMockUser(roles = ADMIN_ROLE)
   void updateUserRole_UserNotFound_ShouldHandleException() throws Exception {
-    when(userService.updateUserRole(eq(USER_ID), eq(Role.ADMIN)))
+    when(userService.updateUserRole(eq(USER_ID.toString()), eq(Role.ADMIN)))
         .thenThrow(new UsernameNotFoundException(USER_NOT_FOUND_MESSAGE));
 
     mockMvc.perform(patch(USER_UPDATE_ROLE_URI, USER_ID)
@@ -167,13 +167,13 @@ class UserControllerImplTest {
         .andExpect(jsonPath("$.success", is(false)))
         .andExpect(jsonPath("$.message", is(USER_NOT_FOUND_MESSAGE)));
 
-    verify(userService, times(1)).updateUserRole(USER_ID, Role.ADMIN);
+    verify(userService, times(1)).updateUserRole(USER_ID.toString(), Role.ADMIN);
   }
 
   @Test
   @WithMockUser(roles = ADMIN_ROLE)
   void disableUser_Success() throws Exception {
-    doNothing().when(userService).disableUser(USER_ID);
+    doNothing().when(userService).disableUser(USER_ID.toString());
 
     mockMvc.perform(post(USER_DISABLE_URI, USER_ID)
             .contentType(MediaType.APPLICATION_JSON))
@@ -182,13 +182,13 @@ class UserControllerImplTest {
         .andExpect(jsonPath("$.message", is(USER_DISABLED_MESSAGE)))
         .andExpect(jsonPath("$.data").doesNotExist());
 
-    verify(userService, times(1)).disableUser(USER_ID);
+    verify(userService, times(1)).disableUser(USER_ID.toString());
   }
 
   @Test
   @WithMockUser(roles = ADMIN_ROLE)
   void enableUser_Success() throws Exception {
-    doNothing().when(userService).enableUser(USER_ID);
+    doNothing().when(userService).enableUser(USER_ID.toString());
 
     mockMvc.perform(post(USER_ENABLE_URI, USER_ID)
             .contentType(MediaType.APPLICATION_JSON))
@@ -197,14 +197,14 @@ class UserControllerImplTest {
         .andExpect(jsonPath("$.message", is(USER_ENABLE_MESSAGE)))
         .andExpect(jsonPath("$.data").doesNotExist());
 
-    verify(userService, times(1)).enableUser(USER_ID);
+    verify(userService, times(1)).enableUser(USER_ID.toString());
   }
 
   @Test
   @WithMockUser(roles = ADMIN_ROLE)
   void enableUser_UserNotFound_ShouldHandleException() throws Exception {
     doThrow(new UsernameNotFoundException(USER_ENABLE_MESSAGE))
-        .when(userService).enableUser(USER_ID);
+        .when(userService).enableUser(USER_ID.toString());
 
     mockMvc.perform(post(USER_ENABLE_URI, USER_ID)
             .contentType(MediaType.APPLICATION_JSON))
@@ -212,7 +212,7 @@ class UserControllerImplTest {
         .andExpect(jsonPath("$.success", is(false)))
         .andExpect(jsonPath("$.message", is(USER_NOT_FOUND_MESSAGE)));
 
-    verify(userService, times(1)).enableUser(USER_ID);
+    verify(userService, times(1)).enableUser(USER_ID.toString());
   }
 
   @Test
@@ -251,7 +251,7 @@ class UserControllerImplTest {
   @Test
   @WithMockUser(roles = ADMIN_ROLE)
   void updateUserRole_WithInvalidUserIdFormat() throws Exception {
-    String invalidUserId = INVALID_USER_ID;
+    String invalidUserId = INVALID_USER_ID.toString();
 
     mockMvc.perform(patch(USER_UPDATE_ROLE_URI, invalidUserId)
             .param("role", ADMIN_ROLE)
@@ -264,27 +264,27 @@ class UserControllerImplTest {
   @Test
   @WithMockUser(roles = ADMIN_ROLE)
   void disableUser_UserAlreadyDisabled_ShouldSucceed() throws Exception {
-    doNothing().when(userService).disableUser(USER_ID);
+    doNothing().when(userService).disableUser(USER_ID.toString());
 
     mockMvc.perform(post(USER_DISABLE_URI, USER_ID)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success", is(true)));
 
-    verify(userService, times(1)).disableUser(USER_ID);
+    verify(userService, times(1)).disableUser(USER_ID.toString());
   }
 
   @Test
   @WithMockUser(roles = ADMIN_ROLE)
   void enableUser_UserAlreadyEnabled_ShouldSucceed() throws Exception {
-    doNothing().when(userService).enableUser(USER_ID);
+    doNothing().when(userService).enableUser(USER_ID.toString());
 
     mockMvc.perform(post(USER_ENABLE_URI, USER_ID)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success", is(true)));
 
-    verify(userService, times(1)).enableUser(USER_ID);
+    verify(userService, times(1)).enableUser(USER_ID.toString());
   }
 
   @Test

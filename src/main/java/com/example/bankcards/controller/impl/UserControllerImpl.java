@@ -8,6 +8,7 @@ import com.example.bankcards.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +31,7 @@ public class UserControllerImpl implements UserController {
   @Override
   @GetMapping
   public ResponseEntity<ApiResponseDto<Page<UserResponseDto>>> getAllUsers(
-      @PageableDefault(size = 20, sort = "createdAt,desc") Pageable pageable) {
+      @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
     Page<UserResponseDto> users = userService.getAllUsers(pageable);
     return ResponseEntity.ok(ApiResponseDto.success(users, "Users retrieved successfully"));
   }

@@ -13,6 +13,3 @@ databaseChangeLog:
       file: db/migration/v1.0/create_index.yml
   - include:
       file: db/migration/v1.0/create_triggers.yml
-
-  - include:
-      file: db/migration/v1.0/insert_into_users.yml

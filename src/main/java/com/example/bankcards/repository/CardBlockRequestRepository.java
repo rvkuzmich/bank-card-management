@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CardBlockRequestRepository extends JpaRepository<CardBlockRequest, UUID> {
 
-  Optional<CardBlockRequest> findByCardIdAndStatus(String cardId, RequestStatus status);
+  Optional<CardBlockRequest> findByCardIdAndStatus(UUID cardId, RequestStatus status);
 }

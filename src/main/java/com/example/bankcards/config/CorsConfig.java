@@ -14,7 +14,7 @@ import java.util.Arrays;
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-  @Value("${cors.allowed-origins:*}")
+  @Value("${cors.allowed-origins:#{null}}")
   private String[] allowedOrigins;
 
   @Value("${cors.allowed-methods:*}")

@@ -7,6 +7,7 @@ import com.example.bankcards.entity.User;
 import com.example.bankcards.mapper.Mapper;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.UserService;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -62,7 +63,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserResponseDto updateUserRole(String userId, Role role) {
-    User user = userRepository.findById(userId)
+    User user = userRepository.findById(UUID.fromString(userId))
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     user.setRole(role);
@@ -74,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void disableUser(String userId) {
-    User user = userRepository.findById(userId)
+    User user = userRepository.findById(UUID.fromString(userId))
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     user.setEnabled(false);
@@ -85,7 +86,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void enableUser(String userId) {
-    User user = userRepository.findById(userId)
+    User user = userRepository.findById(UUID.fromString(userId))
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     user.setEnabled(true);

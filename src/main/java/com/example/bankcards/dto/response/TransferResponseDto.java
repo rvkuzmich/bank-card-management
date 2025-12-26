@@ -3,6 +3,7 @@ package com.example.bankcards.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,13 +20,13 @@ public class TransferResponseDto {
       description = "Unique transfer ID",
       example = "556e8411-e25b-31c2-b251-423433660324"
   )
-  private String id;
+  private UUID id;
 
   @Schema(
       description = "Source card ID",
       example = "550e8400-e29b-41d4-a716-446655440001"
   )
-  private String fromCardId;
+  private UUID fromCardId;
 
   @Schema(
       description = "Source card masked number",
@@ -37,7 +38,7 @@ public class TransferResponseDto {
       description = "Destination card ID",
       example = "550e8400-e29b-41d4-a716-446655440002"
   )
-  private String toCardId;
+  private UUID toCardId;
 
   @Schema(
       description = "Destination card masked number",

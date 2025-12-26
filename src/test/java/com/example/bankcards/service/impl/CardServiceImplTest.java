@@ -14,7 +14,11 @@ import static com.example.bankcards.constants.TestConstants.USERNAME_USER;
 import static com.example.bankcards.constants.TestConstants.USERNAME_ADMIN;
 import static com.example.bankcards.constants.TestConstants.USER_EMAIL;
 import static com.example.bankcards.constants.TestConstants.USER_ID;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -234,7 +238,7 @@ class CardServiceImplTest {
     when(cardRepository.save(any(Card.class))).thenReturn(testCard);
     when(mapper.toCardResponseDto(testCard)).thenReturn(expectedResponse);
 
-    CardResponseDto result = cardService.blockCard(CARD_ID, USERNAME_ADMIN);
+    CardResponseDto result = cardService.blockCard(CARD_ID.toString(), USERNAME_ADMIN);
 
     assertNotNull(result);
     assertEquals(CardStatus.BLOCKED, testCard.getStatus());
@@ -250,7 +254,7 @@ class CardServiceImplTest {
     when(cardRepository.findCardById(CARD_ID)).thenReturn(Optional.empty());
 
     assertThrows(CardNotFoundException.class,
-        () -> cardService.blockCard(CARD_ID, USERNAME_ADMIN));
+        () -> cardService.blockCard(CARD_ID.toString(), USERNAME_ADMIN));
 
     verify(cardRepository).findCardById(CARD_ID);
     verify(cardRepository, never()).save(any(Card.class));
@@ -262,7 +266,7 @@ class CardServiceImplTest {
     when(cardRepository.findCardById(CARD_ID)).thenReturn(Optional.of(testCard));
 
     assertThrows(IllegalStateException.class,
-        () -> cardService.blockCard(CARD_ID, USERNAME_ADMIN));
+        () -> cardService.blockCard(CARD_ID.toString(), USERNAME_ADMIN));
 
     verify(cardRepository).findCardById(CARD_ID);
     verify(cardRepository, never()).save(any(Card.class));
@@ -276,7 +280,7 @@ class CardServiceImplTest {
     when(blockRequestRepository.save(any(CardBlockRequest.class))).thenReturn(
         new CardBlockRequest());
 
-    BlockRequestResponseDto result = cardService.requestCardBlock(CARD_ID, USERNAME_USER);
+    BlockRequestResponseDto result = cardService.requestCardBlock(CARD_ID.toString(), USERNAME_USER);
 
     assertNotNull(result);
     assertEquals(CARD_ID, result.getCardId());
@@ -298,7 +302,7 @@ class CardServiceImplTest {
         Optional.of(testCard));
 
     assertThrows(IllegalStateException.class,
-        () -> cardService.requestCardBlock(CARD_ID, USERNAME_USER));
+        () -> cardService.requestCardBlock(CARD_ID.toString(), USERNAME_USER));
 
     verify(blockRequestRepository, never()).save(any(CardBlockRequest.class));
   }
@@ -328,7 +332,7 @@ class CardServiceImplTest {
     when(blockRequestRepository.save(any(CardBlockRequest.class))).thenReturn(blockRequest);
     when(mapper.toCardResponseDto(testCard)).thenReturn(expectedResponse);
 
-    CardResponseDto result = cardService.approveBlockCard(CARD_ID, USERNAME_ADMIN);
+    CardResponseDto result = cardService.approveBlockCard(CARD_ID.toString(), USERNAME_ADMIN);
 
     assertNotNull(result);
     assertEquals(CardStatus.BLOCKED, testCard.getStatus());
@@ -348,7 +352,7 @@ class CardServiceImplTest {
     when(cardRepository.findCardById(CARD_ID)).thenReturn(Optional.of(testCard));
 
     assertThrows(IllegalStateException.class,
-        () -> cardService.approveBlockCard(CARD_ID, USERNAME_ADMIN));
+        () -> cardService.approveBlockCard(CARD_ID.toString(), USERNAME_ADMIN));
 
     verify(blockRequestRepository, never()).save(any(CardBlockRequest.class));
   }
@@ -368,7 +372,7 @@ class CardServiceImplTest {
     when(cardRepository.save(any(Card.class))).thenReturn(testCard);
     when(mapper.toCardResponseDto(testCard)).thenReturn(expectedResponse);
 
-    CardResponseDto result = cardService.activateCard(CARD_ID, USERNAME_ADMIN);
+    CardResponseDto result = cardService.activateCard(CARD_ID.toString(), USERNAME_ADMIN);
 
     assertNotNull(result);
     assertEquals(CardStatus.ACTIVE, testCard.getStatus());
@@ -383,7 +387,7 @@ class CardServiceImplTest {
     when(cardRepository.findCardById(CARD_ID)).thenReturn(Optional.of(testCard));
 
     assertThrows(IllegalStateException.class,
-        () -> cardService.activateCard(CARD_ID, USERNAME_ADMIN));
+        () -> cardService.activateCard(CARD_ID.toString(), USERNAME_ADMIN));
 
     verify(cardRepository, never()).save(any(Card.class));
   }
@@ -394,7 +398,7 @@ class CardServiceImplTest {
     when(cardRepository.findByIdAndUserId(CARD_ID, testUser.getId())).thenReturn(
         Optional.of(testCard));
 
-    BigDecimal result = cardService.getCardBalance(CARD_ID, USERNAME_USER);
+    BigDecimal result = cardService.getCardBalance(CARD_ID.toString(), USERNAME_USER);
 
     assertNotNull(result);
     assertEquals(BALANCE, result);
@@ -410,7 +414,7 @@ class CardServiceImplTest {
         Optional.empty());
 
     assertThrows(CardNotFoundException.class,
-        () -> cardService.getCardBalance(CARD_ID, USERNAME_USER));
+        () -> cardService.getCardBalance(CARD_ID.toString(), USERNAME_USER));
 
     verify(userRepository).findByUsername(USERNAME_USER);
     verify(cardRepository).findByIdAndUserId(CARD_ID, testUser.getId());

@@ -1,5 +1,10 @@
 server:
   port: 8080
+  error:
+    include-stacktrace: on_param
+    include-exception: false
+    include-message: always
+    include-binding-errors: never
 
 spring:
   datasource:
@@ -13,16 +18,30 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: false
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
-        jdbc:
-          batch_size: 20
 
   liquibase:
     enabled: true
     change-log: classpath:db/migration/db.changelog-master.yml
+
+logging:
+  level:
+    com.example.bankcards: DEBUG
+    org.springframework.boot: INFO
+    org.springframework.context: INFO
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.transaction: DEBUG
+    org.hibernate.SQL: INFO
+    org.hibernate.type: INFO
+    com.fasterxml.jackson.databind: INFO
+
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %highlight(%-5level) %cyan(%logger{36}) - %msg%n"
 
 management:
   endpoints:
@@ -43,13 +62,9 @@ encryption:
   algorithm: AES/CBC/PKCS5Padding
 
 cors:
-  allowed-origins:
-    - "http://localhost:3000"
-    - "http://localhost:4200"
-    - "http://localhost:8081"
-    - "https://bankcard-frontend.com"
-  allowed-methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
-  allowed-headers: Authorization, Content-Type, X-Requested-With, Accept, Origin, Access-Control-Request-Method, Access-Control-Request-Headers
-  exposed-headers: Authorization, Content-Type, Content-Disposition
+  allowed-origins: "http://localhost:3000,http://localhost:4200,http://localhost:8081"
+  allowed-methods: "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+  allowed-headers: "Authorization,Content-Type,X-Requested-With,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers"
+  exposed-headers: "Authorization,Content-Type,Content-Disposition"
   allow-credentials: true
   max-age: 3600

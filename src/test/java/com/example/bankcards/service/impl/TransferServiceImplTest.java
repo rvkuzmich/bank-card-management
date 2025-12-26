@@ -124,8 +124,8 @@ class TransferServiceImplTest {
         .build();
 
     validRequest = TransferRequestDto.builder()
-        .fromCardId(SOURCE_CARD_ID)
-        .toCardId(TARGET_CARD_ID)
+        .fromCardId(SOURCE_CARD_ID.toString())
+        .toCardId(TARGET_CARD_ID.toString())
         .amount(TRANSFER_AMOUNT)
         .description(TRANSFER_DESCRIPTION)
         .build();
@@ -298,7 +298,7 @@ class TransferServiceImplTest {
 
   @Test
   void transferBetweenOwnCards_WhenTransferToSameCard_ShouldThrowException() {
-    validRequest.setToCardId(SOURCE_CARD_ID);
+    validRequest.setToCardId(SOURCE_CARD_ID.toString());
     when(userRepository.findByUsername(USERNAME_USER))
         .thenReturn(Optional.of(testUser));
     when(cardRepository.findByIdAndUserId(SOURCE_CARD_ID, USER_ID))
@@ -376,7 +376,7 @@ class TransferServiceImplTest {
         .thenReturn(transfersPage);
 
     Page<TransferResponseDto> result = transferService
-        .getCardTransferHistory(SOURCE_CARD_ID, USERNAME_USER, pageable);
+        .getCardTransferHistory(SOURCE_CARD_ID.toString(), USERNAME_USER, pageable);
 
     assertThat(result).isNotNull();
     assertThat(result.getContent()).hasSize(1);
@@ -393,7 +393,7 @@ class TransferServiceImplTest {
         .thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> transferService
-        .getCardTransferHistory(CARD_ID, INVALID_USERNAME, pageable))
+        .getCardTransferHistory(CARD_ID.toString(), INVALID_USERNAME, pageable))
         .isInstanceOf(UsernameNotFoundException.class)
         .hasMessage(USER_NOT_FOUND_MESSAGE);
   }
@@ -407,7 +407,7 @@ class TransferServiceImplTest {
         .thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> transferService
-        .getCardTransferHistory(INVALID_CARD_ID, USERNAME_USER, pageable))
+        .getCardTransferHistory(INVALID_CARD_ID.toString(), USERNAME_USER, pageable))
         .isInstanceOf(CardNotFoundException.class)
         .hasMessage(CARD_NOT_FOUND_MESSAGE);
   }
@@ -427,7 +427,7 @@ class TransferServiceImplTest {
         .thenReturn(Optional.of(sourceCard));
 
     assertThatThrownBy(() -> transferService
-        .getCardTransferHistory(CARD_ID, USERNAME_USER, pageable))
+        .getCardTransferHistory(CARD_ID.toString(), USERNAME_USER, pageable))
         .isInstanceOf(IllegalStateException.class)
         .hasMessage(CARD_BELONGS_TO_ANOTHER_USER);
   }

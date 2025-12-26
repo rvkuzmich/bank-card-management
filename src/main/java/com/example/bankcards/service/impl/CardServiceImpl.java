@@ -20,6 +20,7 @@ import com.example.bankcards.util.EncryptionUtil;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -119,7 +120,7 @@ public class CardServiceImpl implements CardService {
   @Transactional
   @PreAuthorize("hasRole('ADMIN')")
   public CardResponseDto blockCard(String cardId, String adminUsername) {
-    Card card = cardRepository.findCardById(cardId)
+    Card card = cardRepository.findCardById(UUID.fromString(cardId))
         .orElseThrow(() -> new CardNotFoundException("Card not found"));
 
     if (card.isExpired()) {
@@ -168,7 +169,7 @@ public class CardServiceImpl implements CardService {
     log.info("Block request for card {} created by user {}", cardId, username);
 
     return BlockRequestResponseDto.builder()
-        .cardId(cardId)
+        .cardId(UUID.fromString(cardId))
         .cardStatus(card.getStatus())
         .hasPendingRequest(true)
         .requestedAt(LocalDateTime.now())
@@ -181,7 +182,7 @@ public class CardServiceImpl implements CardService {
   @Transactional
   @PreAuthorize("hasRole('ADMIN')")
   public CardResponseDto approveBlockCard(String cardId, String adminUsername) {
-    Card card = cardRepository.findCardById(cardId)
+    Card card = cardRepository.findCardById(UUID.fromString(cardId))
         .orElseThrow(() -> new CardNotFoundException("Card not found"));
 
     if (card.getStatus() != CardStatus.PENDING_BLOCK) {
@@ -189,7 +190,7 @@ public class CardServiceImpl implements CardService {
     }
 
     CardBlockRequest blockRequest = blockRequestRepository
-        .findByCardIdAndStatus(cardId, RequestStatus.PENDING)
+        .findByCardIdAndStatus(UUID.fromString(cardId), RequestStatus.PENDING)
         .orElseThrow(() -> new IllegalStateException("Block request not found"));
 
     blockRequest.setApprovedBy(adminUsername);
@@ -211,7 +212,7 @@ public class CardServiceImpl implements CardService {
   @Transactional
   @PreAuthorize("hasRole('ADMIN')")
   public CardResponseDto activateCard(String cardId, String adminUsername) {
-    Card card = cardRepository.findCardById(cardId)
+    Card card = cardRepository.findCardById(UUID.fromString(cardId))
         .orElseThrow(() -> new CardNotFoundException("Card not found"));
 
     if (card.isExpired()) {
@@ -237,7 +238,7 @@ public class CardServiceImpl implements CardService {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-    return cardRepository.findByIdAndUserId(cardId, user.getId())
+    return cardRepository.findByIdAndUserId(UUID.fromString(cardId), user.getId())
         .orElseThrow(() -> new CardNotFoundException("Card not found"));
   }
 }

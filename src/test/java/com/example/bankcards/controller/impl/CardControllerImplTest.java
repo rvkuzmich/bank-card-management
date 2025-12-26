@@ -7,7 +7,6 @@ import static com.example.bankcards.constants.TestConstants.CARDS_BALANCE_URI;
 import static com.example.bankcards.constants.TestConstants.CARDS_BLOCK_URI;
 import static com.example.bankcards.constants.TestConstants.CARDS_URI;
 import static com.example.bankcards.constants.TestConstants.CARD_NOT_FOUND_MESSAGE;
-import static com.example.bankcards.constants.TestConstants.INVALID_JSON_FORMAT_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.INVALID_CARDHOLDER;
 import static com.example.bankcards.constants.TestConstants.INVALID_CARD_NUMBER;
 import static com.example.bankcards.constants.TestConstants.BALANCE;
@@ -50,6 +49,7 @@ import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -125,7 +125,7 @@ class CardControllerImplTest {
             .principal(principal))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data.id").value(CARD_ID))
+        .andExpect(jsonPath("$.data.id").value(CARD_ID.toString()))
         .andExpect(jsonPath("$.data.maskedNumber").value(MASKED_CARD_NUMBER))
         .andExpect(jsonPath("$.data.cardholder").value(CARDHOLDER))
         .andExpect(jsonPath("$.data.status").value(CARD_STATUS_ACTIVE));
@@ -173,7 +173,7 @@ class CardControllerImplTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.content").isArray())
-        .andExpect(jsonPath("$.data.content[0].id").value("card-1"))
+        .andExpect(jsonPath("$.data.content[0].id").value(createTestCardId("1").toString()))
         .andExpect(jsonPath("$.data.totalElements").value(2))
         .andExpect(jsonPath("$.data.totalPages").value(1));
   }
@@ -187,7 +187,7 @@ class CardControllerImplTest {
         .build();
 
     doReturn(responseDto).when(cardService)
-        .blockCard(eq(CARD_ID), eq(USERNAME_ADMIN));
+        .blockCard(eq(CARD_ID.toString()), eq(USERNAME_ADMIN));
 
     Authentication auth = new TestingAuthenticationToken(
         USERNAME_ADMIN,
@@ -204,7 +204,7 @@ class CardControllerImplTest {
             .principal(adminPrincipal))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data.id").value(CARD_ID))
+        .andExpect(jsonPath("$.data.id").value(CARD_ID.toString()))
         .andExpect(jsonPath("$.data.status").value(CARD_STATUS_BLOCKED));
 
     SecurityContextHolder.clearContext();
@@ -222,7 +222,7 @@ class CardControllerImplTest {
         .build();
 
     doReturn(responseDto).when(cardService)
-        .requestCardBlock(eq(CARD_ID), eq(USERNAME_USER));
+        .requestCardBlock(eq(CARD_ID.toString()), eq(USERNAME_USER));
 
     Authentication auth = new TestingAuthenticationToken(
         USERNAME_USER,
@@ -237,7 +237,7 @@ class CardControllerImplTest {
             .principal(principal))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data.cardId").value(CARD_ID))
+        .andExpect(jsonPath("$.data.cardId").value(CARD_ID.toString()))
         .andExpect(jsonPath("$.data.hasPendingRequest").value(true))
         .andExpect(jsonPath("$.data.message").exists());
 
@@ -252,7 +252,7 @@ class CardControllerImplTest {
         .maskedNumber(MASKED_CARD_NUMBER)
         .build();
 
-    when(cardService.approveBlockCard(eq(CARD_ID), eq(USERNAME_USER)))
+    when(cardService.approveBlockCard(eq(CARD_ID.toString()), eq(USERNAME_USER)))
         .thenReturn(responseDto);
 
     mockMvc.perform(post(CARDS_APPROVE_BLOCK_URI, CARD_ID)
@@ -260,7 +260,7 @@ class CardControllerImplTest {
             .principal(principal))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data.id").value(CARD_ID))
+        .andExpect(jsonPath("$.data.id").value(CARD_ID.toString()))
         .andExpect(jsonPath("$.data.status").value(CARD_STATUS_BLOCKED));
   }
 
@@ -272,21 +272,21 @@ class CardControllerImplTest {
         .maskedNumber(MASKED_CARD_NUMBER)
         .build();
 
-    when(cardService.activateCard(eq(CARD_ID), eq(USERNAME)))
+    when(cardService.activateCard(eq(CARD_ID.toString()), eq(USERNAME)))
         .thenReturn(responseDto);
 
     mockMvc.perform(post(CARDS_ACTIVATE_URI, CARD_ID)
             .principal(principal))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data.id").value(CARD_ID))
+        .andExpect(jsonPath("$.data.id").value(CARD_ID.toString()))
         .andExpect(jsonPath("$.data.status").value(CARD_STATUS_ACTIVE));
   }
 
   @Test
   void getBalance_ShouldReturnCardBalance() throws Exception {
 
-    when(cardService.getCardBalance(eq(CARD_ID), eq(USERNAME)))
+    when(cardService.getCardBalance(eq(CARD_ID.toString()), eq(USERNAME)))
         .thenReturn(BALANCE);
 
     mockMvc.perform(get(CARDS_BALANCE_URI, CARD_ID)
@@ -298,7 +298,7 @@ class CardControllerImplTest {
 
   @Test
   void getBalance_WhenCardNotFound_ShouldReturnNotFound() throws Exception {
-    when(cardService.getCardBalance(eq(CARD_ID), eq(USERNAME)))
+    when(cardService.getCardBalance(eq(CARD_ID.toString()), eq(USERNAME)))
         .thenThrow(new CardNotFoundException(CARD_NOT_FOUND_MESSAGE));
 
     mockMvc.perform(get(CARDS_BALANCE_URI, CARD_ID)
@@ -310,18 +310,19 @@ class CardControllerImplTest {
 
   @Test
   void createCard_WithInvalidJson_ShouldReturnBadRequest() throws Exception {
+    String invalidJson = "{\"wrongField\": \"value\"}";
     mockMvc.perform(post(CARDS_URI)
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{invalid json}")
+            .content(invalidJson)
             .principal(principal))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.message", containsString(INVALID_JSON_FORMAT_MESSAGE)));
+        .andExpect(jsonPath("$.message", containsString(VALIDATION_FAILED_MESSAGE)));
   }
 
   @Test
   void activateCard_WhenUnauthorized_ShouldReturnForbidden() throws Exception {
-    when(cardService.activateCard(eq(CARD_ID), eq(USERNAME_USER)))
+    when(cardService.activateCard(eq(CARD_ID.toString()), eq(USERNAME_USER)))
         .thenThrow(new AccessDeniedException("Access denied"));
 
     mockMvc.perform(post(CARDS_ACTIVATE_URI, CARD_ID)
@@ -349,9 +350,10 @@ class CardControllerImplTest {
         .andExpect(status().isUnauthorized());
   }
 
-  private CardResponseDto createTestCardResponse(String suffix) {
+  private CardResponseDto createTestCardResponse(String last) {
+    UUID uuid = createTestCardId(last);
     return CardResponseDto.builder()
-        .id("card-" + suffix)
+        .id(uuid)
         .maskedNumber(MASKED_CARD_NUMBER)
         .cardholder(CARDHOLDER)
         .expiryDate(EXPIRY_DATE)
@@ -360,5 +362,11 @@ class CardControllerImplTest {
         .createdAt(LocalDateTime.now())
         .updatedAt(LocalDateTime.now())
         .build();
+  }
+
+  private UUID createTestCardId(String last) {
+    StringBuilder sb = new StringBuilder(CARD_ID.toString());
+    sb.replace(sb.length() - 1, sb.length(), last);
+    return UUID.fromString(sb.toString());
   }
 }

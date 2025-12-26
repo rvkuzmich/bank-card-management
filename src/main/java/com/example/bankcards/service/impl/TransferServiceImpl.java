@@ -14,6 +14,7 @@ import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.TransferService;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,10 +39,10 @@ public class TransferServiceImpl implements TransferService {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-    Card fromCard = cardRepository.findByIdAndUserId(request.getFromCardId(), user.getId())
+    Card fromCard = cardRepository.findByIdAndUserId(UUID.fromString(request.getFromCardId()), user.getId())
         .orElseThrow(() -> new CardNotFoundException("Source card not found"));
 
-    Card toCard = cardRepository.findByIdAndUserId(request.getToCardId(), user.getId())
+    Card toCard = cardRepository.findByIdAndUserId(UUID.fromString(request.getToCardId()), user.getId())
         .orElseThrow(() -> new CardNotFoundException("Destination card not found"));
 
     validateTransfer(fromCard, toCard, request.getAmount());
@@ -93,14 +94,14 @@ public class TransferServiceImpl implements TransferService {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-    Card card = cardRepository.findCardById(cardId)
+    Card card = cardRepository.findCardById(UUID.fromString(cardId))
         .orElseThrow(() -> new CardNotFoundException("Card not found"));
 
     if (!user.equals(card.getUser())) {
       throw new IllegalStateException("Card does not belong to user");
     }
 
-    Page<Transfer> transfers = transferRepository.findByCardId(cardId, pageable);
+    Page<Transfer> transfers = transferRepository.findByCardId(UUID.fromString(cardId), pageable);
 
     return transfers.map(mapper::toTransferResponseDto);
   }

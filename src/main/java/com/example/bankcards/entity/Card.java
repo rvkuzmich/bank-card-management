@@ -17,6 +17,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +35,7 @@ public class Card {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  private String id;
+  private UUID id;
 
   @Column(name = "card_number", nullable = false, unique = true)
   private String cardNumber;

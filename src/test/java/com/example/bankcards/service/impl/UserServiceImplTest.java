@@ -2,6 +2,7 @@ package com.example.bankcards.service.impl;
 
 import static com.example.bankcards.constants.TestConstants.EMAIL_ALREADY_EXISTS_MESSAGE;
 import static com.example.bankcards.constants.TestConstants.ENCODED_PASSWORD;
+import static com.example.bankcards.constants.TestConstants.INVALID_USER_ID;
 import static com.example.bankcards.constants.TestConstants.NEW_EMAIL;
 import static com.example.bankcards.constants.TestConstants.NEW_USERNAME;
 import static com.example.bankcards.constants.TestConstants.NONEXISTENT_USERNAME;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -305,7 +307,7 @@ class UserServiceImplTest {
     when(userRepository.save(any(User.class))).thenReturn(updatedUser);
     when(mapper.toUserResponseDto(any(User.class))).thenReturn(updatedResponse);
 
-    UserResponseDto result = userService.updateUserRole(USER_ID, newRole);
+    UserResponseDto result = userService.updateUserRole(USER_ID.toString(), newRole);
 
     assertNotNull(result);
     assertEquals(newRole, result.getRole());
@@ -318,15 +320,16 @@ class UserServiceImplTest {
 
   @Test
   void updateUserRole_WithNonExistingUser_ShouldThrowException() {
-    when(userRepository.findById(anyString())).thenReturn(Optional.empty());
+    when(userRepository.findById(UUID.fromString(INVALID_USER_ID.toString())))
+        .thenReturn(Optional.empty());
 
     UsernameNotFoundException exception = assertThrows(
         UsernameNotFoundException.class,
-        () -> userService.updateUserRole(NONEXISTENT_USERNAME, Role.ADMIN)
+        () -> userService.updateUserRole(INVALID_USER_ID.toString(), Role.ADMIN)
     );
 
     assertEquals(USER_NOT_FOUND_MESSAGE, exception.getMessage());
-    verify(userRepository).findById(NONEXISTENT_USERNAME);
+    verify(userRepository).findById(INVALID_USER_ID);
     verify(userRepository, never()).save(any(User.class));
     verify(mapper, never()).toUserResponseDto(any(User.class));
   }
@@ -350,7 +353,7 @@ class UserServiceImplTest {
     when(userRepository.findById(USER_ID)).thenReturn(Optional.of(userToDisable));
     when(userRepository.save(any(User.class))).thenReturn(disabledUser);
 
-    userService.disableUser(USER_ID);
+    userService.disableUser(USER_ID.toString());
 
     verify(userRepository).findById(USER_ID);
     verify(userRepository).save(argThat(user ->
@@ -360,15 +363,16 @@ class UserServiceImplTest {
 
   @Test
   void disableUser_WithNonExistingUser_ShouldThrowException() {
-    when(userRepository.findById(anyString())).thenReturn(Optional.empty());
+    when(userRepository.findById(UUID.fromString(INVALID_USER_ID.toString())))
+        .thenReturn(Optional.empty());
 
     UsernameNotFoundException exception = assertThrows(
         UsernameNotFoundException.class,
-        () -> userService.disableUser(NONEXISTENT_USERNAME)
+        () -> userService.disableUser(INVALID_USER_ID.toString())
     );
 
     assertEquals(USER_NOT_FOUND_MESSAGE, exception.getMessage());
-    verify(userRepository).findById(NONEXISTENT_USERNAME);
+    verify(userRepository).findById(INVALID_USER_ID);
     verify(userRepository, never()).save(any(User.class));
   }
 
@@ -378,7 +382,7 @@ class UserServiceImplTest {
     when(userRepository.findById(USER_ID)).thenReturn(Optional.of(existingUser));
     when(userRepository.save(any(User.class))).thenReturn(existingUser);
 
-    userService.enableUser(USER_ID);
+    userService.enableUser(USER_ID.toString());
 
     verify(userRepository).findById(USER_ID);
     verify(userRepository).save(argThat(user ->
@@ -388,15 +392,16 @@ class UserServiceImplTest {
 
   @Test
   void enableUser_WithNonExistingUser_ShouldThrowException() {
-    when(userRepository.findById(anyString())).thenReturn(Optional.empty());
+    when(userRepository.findById(UUID.fromString(INVALID_USER_ID.toString())))
+        .thenReturn(Optional.empty());
 
     UsernameNotFoundException exception = assertThrows(
         UsernameNotFoundException.class,
-        () -> userService.enableUser(NONEXISTENT_USERNAME)
+        () -> userService.enableUser(INVALID_USER_ID.toString())
     );
 
     assertEquals(USER_NOT_FOUND_MESSAGE, exception.getMessage());
-    verify(userRepository).findById(NONEXISTENT_USERNAME);
+    verify(userRepository).findById(INVALID_USER_ID);
     verify(userRepository, never()).save(any(User.class));
   }
 
@@ -406,10 +411,8 @@ class UserServiceImplTest {
     when(userRepository.findById(USER_ID)).thenReturn(Optional.of(existingUser));
     when(userRepository.save(any(User.class))).thenReturn(existingUser);
 
-    userService.enableUser(USER_ID);
+    userService.enableUser(USER_ID.toString());
 
-    verify(userRepository).save(argThat(user ->
-        user.isEnabled()
-    ));
+    verify(userRepository).save(argThat(User::isEnabled));
   }
 }

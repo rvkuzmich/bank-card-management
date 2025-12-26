@@ -21,7 +21,17 @@ public class TestConstants {
   public static final String USER_ENABLE_URI = "/api/v1/users/{userId}/enable";
   public static final String USER_UPDATE_ROLE_URI = "/api/v1/users/{userId}/role";
 
-  public static final String ANOTHER_USER_ID = UUID.randomUUID().toString();
+  public static final UUID ANOTHER_USER_ID = UUID.randomUUID();
+  public static final UUID INVALID_CARD_ID = UUID.randomUUID();
+  public static final UUID INVALID_USER_ID = UUID.randomUUID();
+  public static final UUID BLOCK_REQUEST_ID = UUID.randomUUID();
+  public static final UUID CARD_ID = UUID.randomUUID();
+  public static final UUID SOURCE_CARD_ID = UUID.randomUUID();
+  public static final UUID TARGET_CARD_ID = UUID.randomUUID();
+  public static final UUID TRANSFER_ID = UUID.randomUUID();
+  public static final UUID TRANSFER_ID_2 = UUID.randomUUID();
+  public static final UUID USER_ID = UUID.randomUUID();
+
   public static final String ANOTHER_USERNAME = "another-user-name";
   public static final String SOURCE_CARD_NUMBER = "4111111111111111";
   public static final String SOURCE_MASKED_CARD_NUMBER = "****1111";
@@ -29,9 +39,7 @@ public class TestConstants {
   public static final String DESTINATION_MASKED_CARD_NUMBER = "****2222";
   public static final String ENCODED_PASSWORD = "encodedPassword";
   public static final String INVALID_CARDHOLDER = "J";
-  public static final String INVALID_CARD_ID = UUID.randomUUID().toString();
   public static final String INVALID_CARD_NUMBER = "123";
-  public static final String INVALID_USER_ID = "1234";
   public static final String INVALID_USERNAME = "ab";
   public static final String INVALID_PASSWORD = "12345";
   public static final String INVALID_EMAIL = "invalid-email";
@@ -40,8 +48,6 @@ public class TestConstants {
   public static final String NEW_LASTNAME = "Petrov";
   public static final String NEW_USERNAME = "newuser";
   public static final String NEW_EMAIL = "new@example.com";
-  public static final String BLOCK_REQUEST_ID = UUID.randomUUID().toString();
-  public static final String CARD_ID = UUID.randomUUID().toString();
   public static final String CARD_NUMBER = "1234567812345678";
   public static final String CARDHOLDER = "Ivan Ivanov";
   public static final String CARD_STATUS_ACTIVE = "ACTIVE";
@@ -53,11 +59,6 @@ public class TestConstants {
   public static final String MASKED_CARD_NUMBER = "**** **** **** 1234";
   public static final String NONEXISTENT_USERNAME = "nonexistent";
   public static final String USER_PASSWORD = "password123";
-  public static final String SOURCE_CARD_ID = UUID.randomUUID().toString();
-  public static final String TARGET_CARD_ID = UUID.randomUUID().toString();
-  public static final String TRANSFER_ID = UUID.randomUUID().toString();
-  public static final String TRANSFER_ID_2 = UUID.randomUUID().toString();
-  public static final String USER_ID = UUID.randomUUID().toString();
   public static final String USER_ROLE = "USER";
   public static final String ADMIN_ROLE = "ADMIN";
   public static final String USERNAME_USER = "username";
@@ -76,7 +77,6 @@ public class TestConstants {
   public static final String FIRSTNAME_VALIDATION_MESSAGE = "First name must not exceed 50 characters";
   public static final String INSUFFICIENT_BALANCE_MESSAGE = "Insufficient balance";
   public static final String INVALID_CREDENTIALS_MESSAGE = "Invalid credentials";
-  public static final String INVALID_JSON_FORMAT_MESSAGE = "Invalid request format. Please check your JSON syntax.";
   public static final String INVALID_TRANSFER_AMOUNT_MESSAGE = "Amount must be positive";
   public static final String PASSWORD_VALIDATION_MESSAGE = "Password must be between 6 and 100 characters";
   public static final String PROFILE_RETRIEVED_MESSAGE = "Profile retrieved";
