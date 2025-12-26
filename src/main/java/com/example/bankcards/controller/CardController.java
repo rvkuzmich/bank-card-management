@@ -27,7 +27,7 @@ public interface CardController {
 
   @Operation(
       summary = "Create new card",
-      description = "Create a new bank card. Admin only."
+      description = "Create a new bank card. Admin only"
   )
   @ApiResponses(value = {
       @ApiResponse(
@@ -68,6 +68,10 @@ public interface CardController {
               mediaType = MediaType.APPLICATION_JSON_VALUE,
               schema = @Schema(implementation = ApiResponseDto.class)
           )
+      ),
+      @ApiResponse(
+          responseCode = "400",
+          description = "Invalid request"
       ),
       @ApiResponse(
           responseCode = "401",
@@ -239,6 +243,10 @@ public interface CardController {
               mediaType = MediaType.APPLICATION_JSON_VALUE,
               schema = @Schema(implementation = ApiResponseDto.class)
           )
+      ),
+      @ApiResponse(
+          responseCode = "400",
+          description = "Invalid card ID"
       ),
       @ApiResponse(
           responseCode = "401",

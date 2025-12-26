@@ -94,14 +94,14 @@ public class CardControllerImpl implements CardController {
   }
 
   @Override
-  @PostMapping("/{cardId}/approve-block")
+  @PostMapping("/{cardId}/reject-block")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ApiResponseDto<CardResponseDto>> rejectBlockCard(
       @PathVariable String cardId,
       @RequestParam(required = false) String username) {
 
     CardResponseDto response = cardService.rejectBlockCard(cardId, username);
-    return ResponseEntity.ok(ApiResponseDto.success(response, "Block request approved"));
+    return ResponseEntity.ok(ApiResponseDto.success(response, "Block request rejected"));
   }
 
   @Override

@@ -63,10 +63,6 @@ public interface AuthController {
           responseCode = "400",
           description = "Invalid user data or user already exists"
       ),
-      @ApiResponse(
-          responseCode = "409",
-          description = "Conflict: user with email/username already exists"
-      )
   })
   ResponseEntity<ApiResponseDto<UserResponseDto>> register(
       @Valid @RequestBody RegisterRequestDto request
@@ -74,7 +70,7 @@ public interface AuthController {
 
   @Operation(
       summary = "Get user profile",
-      description = "Returns information about authenticated user. JWT token requires."
+      description = "Returns information about authenticated user. JWT token requires"
   )
   @ApiResponses(value = {
       @ApiResponse(
