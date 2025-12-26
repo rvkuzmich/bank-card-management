@@ -29,7 +29,6 @@ public class SecurityConfig {
   private final UserRepository userRepository;
   private final JwtService jwtService;
 
-  // Инжектируем JwtService, а не JwtAuthenticationFilter
   public SecurityConfig(UserRepository userRepository, JwtService jwtService) {
     this.userRepository = userRepository;
     this.jwtService = jwtService;
@@ -41,15 +40,15 @@ public class SecurityConfig {
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(
-                "/api/auth/**",
+                "/api/v1/auth/**",
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
                 "/swagger-ui.html",
                 "/api-docs/**",
-                "/actuator/health"
+                "/actuator/health",
+                "/error"
             ).permitAll()
-            .requestMatchers("/api/admin/**").hasRole("ADMIN")
-            .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+            .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
             .anyRequest().authenticated()
         )
         .sessionManagement(session -> session
