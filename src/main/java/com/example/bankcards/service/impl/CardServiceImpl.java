@@ -193,8 +193,8 @@ public class CardServiceImpl implements CardService {
         .findByCardIdAndStatus(UUID.fromString(cardId), RequestStatus.PENDING)
         .orElseThrow(() -> new IllegalStateException("Block request not found"));
 
-    blockRequest.setApprovedBy(adminUsername);
-    blockRequest.setApprovedAt(LocalDateTime.now());
+    blockRequest.setReviewedBy(adminUsername);
+    blockRequest.setReviewedAt(LocalDateTime.now());
     blockRequest.setStatus(RequestStatus.APPROVED);
     blockRequestRepository.save(blockRequest);
 
@@ -204,6 +204,31 @@ public class CardServiceImpl implements CardService {
     card = cardRepository.save(card);
 
     log.info("Card {} block approved by admin {}", cardId, adminUsername);
+
+    return mapper.toCardResponseDto(card);
+  }
+
+  @Override
+  @Transactional
+  @PreAuthorize("hasRole('ADMIN')")
+  public CardResponseDto rejectBlockCard(String cardId, String adminUsername) {
+    Card card = cardRepository.findCardById(UUID.fromString(cardId))
+        .orElseThrow(() -> new CardNotFoundException("Card not found"));
+
+    if (card.getStatus() != CardStatus.PENDING_BLOCK) {
+      throw new IllegalStateException("No pending block request for this card");
+    }
+
+    CardBlockRequest blockRequest = blockRequestRepository
+        .findByCardIdAndStatus(UUID.fromString(cardId), RequestStatus.PENDING)
+        .orElseThrow(() -> new IllegalStateException("Block request not found"));
+
+    blockRequest.setReviewedBy(adminUsername);
+    blockRequest.setReviewedAt(LocalDateTime.now());
+    blockRequest.setStatus(RequestStatus.REJECTED);
+    blockRequestRepository.save(blockRequest);
+
+    log.info("Card {} block rejected by admin {}", cardId, adminUsername);
 
     return mapper.toCardResponseDto(card);
   }

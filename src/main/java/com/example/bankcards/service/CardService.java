@@ -24,4 +24,6 @@ public interface CardService {
   BlockRequestResponseDto requestCardBlock(String cardId, String username);
 
   CardResponseDto approveBlockCard(String cardId, String adminUsername);
+
+  CardResponseDto rejectBlockCard(String cardId, String adminUsername);
 }

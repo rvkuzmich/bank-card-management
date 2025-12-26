@@ -155,6 +155,43 @@ public interface CardController {
   );
 
   @Operation(
+      summary = "Reject card block request",
+      description = "Admin rejection for card block request. Admin only."
+  )
+  @ApiResponses(value = {
+      @ApiResponse(
+          responseCode = "200",
+          description = "Card block rejected",
+          content = @Content(
+              mediaType = MediaType.APPLICATION_JSON_VALUE,
+              schema = @Schema(implementation = ApiResponseDto.class)
+          )
+      ),
+      @ApiResponse(
+          responseCode = "400",
+          description = "Invalid request"
+      ),
+      @ApiResponse(
+          responseCode = "401",
+          description = "Unauthorized"
+      ),
+      @ApiResponse(
+          responseCode = "403",
+          description = "Forbidden - admin role required"
+      ),
+      @ApiResponse(
+          responseCode = "404",
+          description = "Card or block request not found"
+      )
+  })
+  ResponseEntity<ApiResponseDto<CardResponseDto>> rejectBlockCard(
+      @Parameter(description = "Card ID", example = "550e8400-e29b-41d4-a716-446655440000")
+      @PathVariable String cardId,
+      @Parameter(description = "Username for block request (optional)", required = false)
+      @RequestParam(required = false) String username
+  );
+
+  @Operation(
       summary = "Activate card",
       description = "Activate a previously blocked card. Admin only."
   )

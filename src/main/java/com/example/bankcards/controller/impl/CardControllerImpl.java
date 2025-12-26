@@ -94,6 +94,17 @@ public class CardControllerImpl implements CardController {
   }
 
   @Override
+  @PostMapping("/{cardId}/approve-block")
+  @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<ApiResponseDto<CardResponseDto>> rejectBlockCard(
+      @PathVariable String cardId,
+      @RequestParam(required = false) String username) {
+
+    CardResponseDto response = cardService.rejectBlockCard(cardId, username);
+    return ResponseEntity.ok(ApiResponseDto.success(response, "Block request approved"));
+  }
+
+  @Override
   @PostMapping("/{cardId}/activate")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<ApiResponseDto<CardResponseDto>> activateCard(

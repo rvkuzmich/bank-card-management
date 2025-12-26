@@ -44,12 +44,12 @@ databaseChangeLog:
                   remarks: Block request creation timestamp
 
               - column:
-                  name: approved_by
+                  name: reviewed_by
                   type: VARCHAR(100)
                   remarks: Approver username
 
               - column:
-                  name: approved_at
+                  name: reviewed_at
                   type: TIMESTAMP
                   remarks: Block request approve timestamp
 
@@ -59,7 +59,7 @@ databaseChangeLog:
                   defaultValue: 'PENDING'
                   constraints:
                     nullable: false
-                  remarks: Block request status (PENDING, APPROVED, REJECTED, CANCELLED)
+                  remarks: Block request status (PENDING, APPROVED, REJECTED)
 
         - addForeignKeyConstraint:
             baseTableName: card_block_requests
@@ -78,7 +78,7 @@ databaseChangeLog:
                   name: card_id
               - column:
                   name: status
-            remarks: Index for requests search by card and satus
+            remarks: Index for requests search by card and status
 
         - createIndex:
             tableName: card_block_requests

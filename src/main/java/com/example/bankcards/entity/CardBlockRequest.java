@@ -39,11 +39,11 @@ public class CardBlockRequest {
   @Column(name = "requested_at")
   private LocalDateTime requestedAt;
 
-  @Column(name = "approved_by")
-  private String approvedBy;
+  @Column(name = "reviewed_by")
+  private String reviewedBy;
 
-  @Column(name = "approved_at")
-  private LocalDateTime approvedAt;
+  @Column(name = "reviewed_at")
+  private LocalDateTime reviewedAt;
 
   @Enumerated(EnumType.STRING)
   private RequestStatus status;
