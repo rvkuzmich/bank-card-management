@@ -29,7 +29,7 @@ public class OpenApiConfig {
                 .url("http://springdoc.org")))
         .externalDocs(new ExternalDocumentation()
             .description("Bank Card Management Documentation")
-            .url("https://github.com/bankcard/docs"))
+            .url("https://github.com/rvkuzmich/bank-card-management/tree/main/docs"))
         .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
         .components(new Components()
             .addSecuritySchemes("bearerAuth",
